@@ -239,23 +239,7 @@ a{text-decoration:none;color:inherit}
 </div></section>
 <section id="stand" class="page"><div class="wrap">
  <div class="section-title"><h2>Klassement</h2><span>Actueel</span></div>
- <div class="stand">
-  <div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div>
-  <div class="row"><div>1</div><div><b>Zweet Club</b></div><div>3</div><div>9</div></div>
-  <div class="row"><div>2</div><div><b>HTD United</b></div><div>3</div><div>9</div></div>
-  <div class="row"><div>3</div><div><b>Frigo Loco</b></div><div>3</div><div>9</div></div>
-  <div class="row"><div>4</div><div><b>United Boys</b></div><div>4</div><div>7</div></div>
-  <div class="row"><div>5</div><div>FC De Ploegmoats</div><div>2</div><div>6</div></div>
-  <div class="row"><div>6</div><div>MVC Recubela</div><div>3</div><div>6</div></div>
-  <div class="row"><div>7</div><div>The Black Adders</div><div>4</div><div>4</div></div>
-  <div class="row"><div>8</div><div>Château Des Frites</div><div>3</div><div>4</div></div>
-  <div class="row"><div>9</div><div>Yellow Fever</div><div>3</div><div>3</div></div>
-  <div class="row"><div>10</div><div>Charlie Shot</div><div>4</div><div>3</div></div>
-  <div class="row"><div>11</div><div>Red Star Ghent</div><div>4</div><div>3</div></div>
-  <div class="row"><div>12</div><div>De Balzakskes</div><div>4</div><div>1</div></div>
-  <div class="row"><div>13</div><div>Pantorino FC</div><div>0</div><div>0</div></div>
-  <div class="row"><div>14</div><div>De Kioskvrienden</div><div>4</div><div>0</div></div>
- </div>
+ <div id="live-stand" class="stand"><div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div><div class="row"><div colspan="4">Klassement laden…</div></div></div>
 </div></section>
 
 <section id="statistieken" class="page"><div class="wrap">
@@ -334,8 +318,43 @@ function headerIndex(headers, names){
   return -1;
 }
 async function loadLiveStand(){
-  // Het competitieklassement wordt momenteel handmatig bijgehouden.
-  // De spelersstatistieken hieronder komen wel live uit Google Sheets.
+  const box=document.getElementById("live-stand");
+  const fallback=[
+    ["Zweet Club",3,9],["HTD United",3,9],["Frigo Loco",3,9],["United Boys",4,7],
+    ["FC De Ploegmoats",2,6],["MVC Recubela",3,6],["The Black Adders",4,4],["Château Des Frites",3,4],
+    ["Yellow Fever",3,3],["Charlie Shot",4,3],["Red Star Ghent",4,3],["De Balzakskes",4,1],
+    ["Pantorino FC",0,0],["De Kioskvrienden",4,0]
+  ];
+  const render=(rows)=>{
+    let html='<div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div>';
+    rows.forEach((r,i)=>{
+      const cls=norm(r[0])===norm("United Boys")?' ub-highlight':'';
+      html+=`<div class="row${cls}"><div>${i+1}</div><div><b>${esc(r[0])}</b></div><div>${esc(r[1])}</div><div>${esc(r[2])}</div></div>`;
+    });
+    box.innerHTML=html;
+  };
+  try{
+    const rows=await loadSheet("Stand");
+    const headerRowIndex=rows.findIndex(r=>{
+      const h=r.map(norm);
+      return h.includes("ploeg") && (h.includes("punten") || h.includes("punt")) && (h.includes("wed") || h.includes("wedstrijden"));
+    });
+    if(headerRowIndex<0) throw new Error("Stand-koppen niet gevonden");
+    const headers=rows[headerRowIndex];
+    const idx={
+      rank:headerIndex(headers,["#"]),
+      team:headerIndex(headers,["Ploeg"]),
+      played:headerIndex(headers,["Wed","Wedstrijden"]),
+      points:headerIndex(headers,["Punten","Punt"])
+    };
+    if(idx.team<0 || idx.played<0 || idx.points<0) throw new Error("Stand-kolommen niet gevonden");
+    const data=rows.slice(headerRowIndex+1).map(r=>[String(r[idx.team]??"").trim(),String(r[idx.played]??"").trim(),String(r[idx.points]??"").trim()]).filter(r=>r[0]);
+    if(data.length<1) throw new Error("Geen stand gevonden");
+    render(data);
+  }catch(e){
+    console.error(e);
+    render(fallback);
+  }
 }
 async function loadLiveStats(){
   const box=document.getElementById("live-stats");
