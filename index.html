@@ -308,8 +308,14 @@ async function loadSheet(sheet){
   return parseCSV(await r.text());
 }
 function headerIndex(headers, names){
+  // Google Sheets can publish slightly different header text (e.g. 'Wed.', 'Wedstrijden' or extra spaces).
+  const clean=v=>norm(v).replace(/[^a-z0-9]/g,"");
   for(const name of names){
-    const i=headers.findIndex(h=>norm(h)===norm(name));
+    const target=clean(name);
+    const i=headers.findIndex(h=>{
+      const got=clean(h);
+      return got===target || got.startsWith(target) || target.startsWith(got);
+    });
     if(i>=0) return i;
   }
   return -1;
@@ -377,7 +383,15 @@ async function loadLiveStats(){
         r[idx.gw]??""
       ]);
     });
-    const data=wanted.map(w=>byName.get(norm(w)) || fallback.find(r=>norm(r[0])===norm(w))).filter(Boolean);
+    // Vul ontbrekende kolommen/waarden aan met de laatst bekende waarden.
+    // Zo blijft de tabel netjes gevuld als Google een kolomkop anders publiceert.
+    const data=wanted.map(w=>{
+      const live=byName.get(norm(w));
+      const old=fallback.find(r=>norm(r[0])===norm(w));
+      if(!old && !live) return null;
+      if(!live) return old;
+      return live.map((v,i)=>String(v??"").trim()!=="" ? v : (old ? old[i] : ""));
+    }).filter(Boolean);
     if(data.length<1) throw new Error("Geen spelersgegevens gevonden");
     box.className="info-card";
     box.innerHTML=makeTable(data);
