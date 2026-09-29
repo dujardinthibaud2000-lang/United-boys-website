@@ -109,15 +109,26 @@ a{text-decoration:none;color:inherit}
 .live-dot{width:8px;height:8px;border-radius:50%}
 .live-loading{padding:18px;text-align:center;color:#718096}
 .live-error{padding:18px;border-radius:14px;background:#fff4f4;color:#a33b3b;font-weight:700}
-.live-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.live-table{display:table !important;width:100%;min-width:820px;table-layout:auto;border-collapse:collapse}
+.live-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px}
+.live-table{display:table !important;width:100%;min-width:640px;table-layout:fixed;border-collapse:collapse}
 .live-table thead{display:table-header-group !important}
 .live-table tbody{display:table-row-group !important}
 .live-table tr{display:table-row !important}
-.live-table th,.live-table td{display:table-cell !important;padding:12px 10px;border-bottom:1px solid #dce5ef;text-align:left;white-space:nowrap;vertical-align:middle}
-.live-table th:first-child,.live-table td:first-child{min-width:180px}
-.live-table th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#5c6b7d;background:#f6f9fc}
+.live-table th,.live-table td{display:table-cell !important;padding:9px 7px;border-bottom:1px solid #dce5ef;text-align:center;white-space:nowrap;vertical-align:middle}
+.live-table th:nth-child(1),.live-table td:nth-child(1){width:34px}
+.live-table th:nth-child(2),.live-table td:nth-child(2){width:145px;text-align:left}
+.live-table th:nth-child(n+3),.live-table td:nth-child(n+3){width:68px}
+.live-table th{font-size:11px;text-transform:uppercase;letter-spacing:.025em;color:#5c6b7d;background:#f6f9fc}
+.live-table td{font-size:14px;color:#10213b}
+.live-table td b{font-size:14px}
 .live-table tr.ub-highlight td{font-weight:800;background:#eef6ff}
+@media(max-width:699px){
+ .live-table-wrap{margin:0}
+ .live-table{min-width:620px}
+ .live-table th:nth-child(2),.live-table td:nth-child(2){width:130px}
+ .live-table th:nth-child(n+3),.live-table td:nth-child(n+3){width:65px}
+ .live-table th,.live-table td{padding:8px 5px}
+}
 
 </style>
 </head>
@@ -336,9 +347,9 @@ async function loadLiveStats(){
     "Carlos":[0,0,0,0,0,0],"Darren":[0,0,0,0,0,0],"Naam nog in te vullen":[0,0,0,0,0,0]
   };
   const makeTable=(data,note="")=>{
-    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>#</th><th>Speler</th><th>Wedstr.</th><th>Goals ⚽</th><th>Assists 🅰️</th><th>Geel 🟨</th><th>Rood 🟥</th><th>MOTM ⭐</th><th>G/W</th></tr></thead><tbody>';
+    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>#</th><th>Speler</th><th>Wed.</th><th>Goals ⚽</th><th>Assists 🅰️</th><th>Geel 🟨</th><th>Rood 🟥</th><th>MOTM ⭐</th></tr></thead><tbody>';
     data.forEach((r,i)=>{
-      out+=`<tr><td>${i+1}</td><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td><td>${esc(r[5])}</td><td>${esc(r[6])}</td><td>${esc(r[7])}</td></tr>`;
+      out+=`<tr><td>${i+1}</td><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td><td>${esc(r[5])}</td><td>${esc(r[6])}</td></tr>`;
     });
     out+='</tbody></table></div>';
     if(note) out+=`<p class="swipe-note" style="margin-top:10px">${esc(note)}</p>`;
