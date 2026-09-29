@@ -403,7 +403,7 @@ async function loadLiveStats(){
     box.innerHTML=makeTable(data,"Live laden lukt momenteel niet; dit zijn de laatst bekende waarden.");
   }
 }
-function loadLiveMatches(){
+async function loadLiveMatches(){
   const box=document.getElementById("live-matches");
   const homeAway=["UIT","THUIS","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","UIT","UIT","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","THUIS","THUIS"];
   const fallback=[
