@@ -130,6 +130,18 @@ a{text-decoration:none;color:inherit}
  .live-table th,.live-table td{padding:8px 5px}
 }
 
+
+/* Live countdown */
+.countdown-card{margin:22px 0 28px;background:linear-gradient(135deg,#061b35,#0a2e59);color:#fff;border-radius:22px;padding:22px 16px;border:1px solid rgba(7,86,166,.45);box-shadow:0 12px 30px rgba(6,27,53,.14)}
+.countdown-label{text-align:center;text-transform:uppercase;letter-spacing:2.5px;font-weight:900;color:#5aa0ff;font-size:13px;margin-bottom:8px}
+.countdown-match{text-align:center;font-size:22px;font-weight:900;margin:4px 0 6px}
+.countdown-meta{text-align:center;color:#d8e7fa;font-size:14px;margin-bottom:18px}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.countdown-unit{background:rgba(255,255,255,.08);border:1px solid rgba(90,160,255,.35);border-radius:14px;padding:13px 6px;text-align:center}
+.countdown-number{font-size:31px;line-height:1;font-weight:900}
+.countdown-name{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#7db6ff;margin-top:6px;font-weight:800}
+@media(max-width:420px){.countdown-match{font-size:19px}.countdown-number{font-size:27px}.countdown-unit{padding:11px 4px}}
+
 </style>
 </head>
 <body>
@@ -160,6 +172,19 @@ a{text-decoration:none;color:inherit}
     <p>Welkom op de officiële website van United Boys. Onze ploeg, wedstrijden, resultaten en klassement — allemaal op één plek.</p>
   </div></div>
   <div class="wrap">
+
+    <div id="countdown-card" class="countdown-card">
+      <div class="countdown-label">Aftellen tot aftrap</div>
+      <div id="countdown-match" class="countdown-match">United Boys vs Frigo Loco</div>
+      <div id="countdown-meta" class="countdown-meta">2 oktober 2026 • 21:00 • Sporthal Zwijnaarde</div>
+      <div class="countdown-grid">
+        <div class="countdown-unit"><div id="cd-days" class="countdown-number">--</div><div class="countdown-name">Dagen</div></div>
+        <div class="countdown-unit"><div id="cd-hours" class="countdown-number">--</div><div class="countdown-name">Uren</div></div>
+        <div class="countdown-unit"><div id="cd-minutes" class="countdown-number">--</div><div class="countdown-name">Min</div></div>
+        <div class="countdown-unit"><div id="cd-seconds" class="countdown-number">--</div><div class="countdown-name">Sec</div></div>
+      </div>
+    </div>
+
     <div class="section-title"><h2>Volgende wedstrijd</h2><span>Match 5</span></div>
     <div class="next">
       <div class="date">02 OKTOBER 2026 • 21:00</div>
@@ -510,6 +535,63 @@ function loadLiveGoogleSheets(){
   loadLiveStats();
   loadLiveMatches();
   loadLiveNews();
+}
+
+
+// Live countdown to the next unplayed match
+let countdownTimer=null;
+function parseMatchDate(dateStr,timeStr){
+  const dm=String(dateStr||'').match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  if(!dm) return null;
+  const tm=String(timeStr||'').match(/(\d{1,2})(?::(\d{2}))?/);
+  const h=tm?Number(tm[1]):0; const min=tm&&tm[2]?Number(tm[2]):0;
+  const d=new Date(Number(dm[3]),Number(dm[2])-1,Number(dm[1]),h,min,0);
+  return isNaN(d.getTime())?null:d;
+}
+function updateCountdownTarget(m){
+  const target=parseMatchDate(m[1],m[5]);
+  if(!target) return;
+  const matchEl=document.getElementById('countdown-match');
+  const metaEl=document.getElementById('countdown-meta');
+  const title=(m[2]||'').trim();
+  matchEl.textContent='United Boys vs '+title;
+  const prettyDate=target.toLocaleDateString('nl-BE',{day:'numeric',month:'long',year:'numeric'});
+  metaEl.textContent=prettyDate+' • '+String(m[5]||'').replace(' u','')+' • '+(m[6]||'');
+  const tick=()=>{
+    const diff=target.getTime()-Date.now();
+    if(diff<=0){
+      ['cd-days','cd-hours','cd-minutes','cd-seconds'].forEach(id=>document.getElementById(id).textContent='00');
+      if(countdownTimer) clearInterval(countdownTimer);
+      return;
+    }
+    const total=Math.floor(diff/1000);
+    const days=Math.floor(total/86400);
+    const hours=Math.floor((total%86400)/3600);
+    const minutes=Math.floor((total%3600)/60);
+    const seconds=total%60;
+    document.getElementById('cd-days').textContent=String(days).padStart(2,'0');
+    document.getElementById('cd-hours').textContent=String(hours).padStart(2,'0');
+    document.getElementById('cd-minutes').textContent=String(minutes).padStart(2,'0');
+    document.getElementById('cd-seconds').textContent=String(seconds).padStart(2,'0');
+  };
+  tick();
+  if(countdownTimer) clearInterval(countdownTimer);
+  countdownTimer=setInterval(tick,1000);
+}
+async function loadHomeCountdown(){
+  try{
+    const rows=await loadSheet('Wedstrijdresultaten');
+    const headerRowIndex=rows.findIndex(r=>{const h=r.map(norm);return h.includes('datum')&&h.includes('tegenstander')&&h.includes('score')&&h.includes('uur')});
+    if(headerRowIndex<0) throw new Error('Geen wedstrijdkoppen');
+    const headers=rows[headerRowIndex];
+    const idx={num:headerIndex(headers,['#']),date:headerIndex(headers,['Datum']),opp:headerIndex(headers,['Tegenstander']),score:headerIndex(headers,['Score']),time:headerIndex(headers,['Uur']),location:headerIndex(headers,['Opmerking'])};
+    const data=rows.slice(headerRowIndex+1).map((r,i)=>[idx.num>=0?r[idx.num]||String(i+1):String(i+1),r[idx.date]||'',r[idx.opp]||'',idx.score>=0?r[idx.score]||'':'', '',idx.time>=0?r[idx.time]||'':'',idx.location>=0?r[idx.location]||'':'']).filter(r=>r[1]&&r[2]);
+    const now=Date.now();
+    const next=data.find(m=>{const d=parseMatchDate(m[1],m[5]);return d&&d.getTime()>now&&!m[3]});
+    if(next) updateCountdownTarget(next);
+  }catch(e){
+    updateCountdownTarget([5,'02/10/2026','Frigo Loco','','','21u','Sporthal Zwijnaarde']);
+  }
 }
 
 function showPage(){
