@@ -228,7 +228,7 @@ a{text-decoration:none;color:inherit}
 
 <section id="nieuws" class="page"><div class="wrap">
  <div class="section-title"><h2>Nieuws</h2><span>United Boys</span></div>
- <div class="info-card"><small>25 SEPTEMBER 2026</small><strong>5–0 winst!</strong><p>United Boys wint overtuigend van Charlie Shot.</p></div>
+ <div id="live-news" class="news-list"><div class="info-card live-loading">Nieuws laden…</div></div>
 </div></section>
 
 <section id="sponsors" class="page"><div class="wrap">
@@ -472,10 +472,45 @@ async function loadLiveMatches(){
     render(fallback);
   }
 }
+async function loadLiveNews(){
+  const box=document.getElementById("live-news");
+  const fallback=[
+    ["29/09/2026","United Boys wint met 5-0!","United Boys pakt een mooie overwinning tegen Charlie Shot.",""]
+  ];
+  const render=(items)=>{
+    if(!items.length){ box.innerHTML='<div class="info-card"><p>Er is nog geen nieuws.</p></div>'; return; }
+    box.innerHTML=items.map(n=>{
+      const photo=n[3] ? `<img src="${esc(n[3])}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:14px;margin-bottom:14px">` : '';
+      return `<div class="info-card" style="margin-bottom:14px">${photo}<small>${esc(n[0])}</small><strong style="display:block;margin-top:5px;font-size:20px">${esc(n[1])}</strong><p>${esc(n[2])}</p></div>`;
+    }).join('');
+  };
+  try{
+    const rows=await loadSheet("Nieuws");
+    const headerRowIndex=rows.findIndex(r=>{
+      const h=r.map(norm);
+      return h.includes("datum") && h.includes("titel") && h.includes("tekst");
+    });
+    if(headerRowIndex<0) throw new Error("Nieuws-koppen niet gevonden");
+    const headers=rows[headerRowIndex];
+    const idx={
+      date:headerIndex(headers,["Datum"]), title:headerIndex(headers,["Titel"]), text:headerIndex(headers,["Tekst"]), photo:headerIndex(headers,["Foto"])
+    };
+    if(idx.date<0 || idx.title<0 || idx.text<0) throw new Error("Nieuws-kolommen niet gevonden");
+    const data=rows.slice(headerRowIndex+1).map(r=>[
+      r[idx.date]||"",r[idx.title]||"",r[idx.text]||"",idx.photo>=0?(r[idx.photo]||""):""
+    ]).filter(r=>r[1]||r[2]);
+    data.reverse();
+    render(data);
+  }catch(e){
+    console.error(e);
+    render(fallback);
+  }
+}
 function loadLiveGoogleSheets(){
   loadLiveStand();
   loadLiveStats();
   loadLiveMatches();
+  loadLiveNews();
 }
 
 function showPage(){
