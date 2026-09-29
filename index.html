@@ -109,9 +109,13 @@ a{text-decoration:none;color:inherit}
 .live-dot{width:8px;height:8px;border-radius:50%}
 .live-loading{padding:18px;text-align:center;color:#718096}
 .live-error{padding:18px;border-radius:14px;background:#fff4f4;color:#a33b3b;font-weight:700}
-.live-table-wrap{overflow-x:auto}
-.live-table{width:100%;border-collapse:collapse;min-width:560px}
-.live-table th,.live-table td{padding:12px 10px;border-bottom:1px solid #dce5ef;text-align:left}
+.live-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.live-table{display:table !important;width:100%;min-width:760px;table-layout:auto;border-collapse:collapse}
+.live-table thead{display:table-header-group !important}
+.live-table tbody{display:table-row-group !important}
+.live-table tr{display:table-row !important}
+.live-table th,.live-table td{display:table-cell !important;padding:12px 10px;border-bottom:1px solid #dce5ef;text-align:left;white-space:nowrap;vertical-align:middle}
+.live-table th:first-child,.live-table td:first-child{min-width:180px}
 .live-table th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#5c6b7d;background:#f6f9fc}
 .live-table tr.ub-highlight td{font-weight:800;background:#eef6ff}
 
@@ -316,38 +320,72 @@ async function loadLiveStand(){
 }
 async function loadLiveStats(){
   const box=document.getElementById("live-stats");
+  const fallback=[
+    ["Thibaud","0","0","0","0","0","0","0"],
+    ["Tuncay","3","9","3","0","0","2","3"],
+    ["Tom","1","2","1","0","0","0","2"],
+    ["Arno","3","7","2","0","0","0","2,333333333"],
+    ["Louis","3","1","2","0","0","0","0,333333333"],
+    ["Xander","2","1","0","0","0","0","0,5"],
+    ["Simon","3","0","4","0","0","1","0"],
+    ["Tibe","2","1","0","0","0","0","0,5"],
+    ["Mats","0","0","0","0","0","0","0"],
+    ["Carlos","0","0","0","0","0","0","0"],
+    ["Darren","0","0","0","0","0","0","0"],
+    ["Naam nog in te vullen","0","0","0","0","0","0","0"]
+  ];
+  const makeTable=(data, note="")=>{
+    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>Speler</th><th>Wedstr.</th><th>Goals ⚽</th><th>Assists 🅰️</th><th>Geel 🟨</th><th>Rood 🟥</th><th>MOTM ⭐</th><th>G/W</th></tr></thead><tbody>';
+    data.forEach(r=>{
+      out+=`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td><td>${esc(r[5])}</td><td>${esc(r[6])}</td><td>${esc(r[7])}</td></tr>`;
+    });
+    out+='</tbody></table></div>';
+    if(note) out+=`<p class="swipe-note" style="margin-top:10px">${esc(note)}</p>`;
+    return out;
+  };
   try{
-    // De statistieken staan in het tabblad "Klassement". De echte kolomkoppen
-    // staan niet op rij 1, dus eerst zoeken we de rij met "Speler".
     const rows=await loadSheet("Klassement");
+    // Zoek de echte tabelkop en lees alleen de eerstvolgende unieke spelersrijen.
     const headerRowIndex=rows.findIndex(r=>r.some(v=>norm(v)==="speler"));
     if(headerRowIndex<0) throw new Error("Kolomkoppen niet gevonden");
     const headers=rows[headerRowIndex];
-    const playerI=headerIndex(headers,["Speler"]);
-    const playedI=headerIndex(headers,["Wed"]);
-    const goalsI=headerIndex(headers,["Goals"]);
-    const assistsI=headerIndex(headers,["Assists"]);
-    const yellowI=headerIndex(headers,["Geel"]);
-    const redI=headerIndex(headers,["Rood"]);
-    const motmI=headerIndex(headers,["MOTM"]);
-    const gwI=headerIndex(headers,["G/W"]);
-    const playerNames=["Thibaud","Tuncay","Tom","Arno","Louis","Xander","Simon","Tibe","Mats","Carlos","Darren","Naam nog in te vullen"];
-    const data=rows.slice(headerRowIndex+1).filter(r=>{
-      const name=playerI>=0?String(r[playerI]||"").trim():"";
-      return playerNames.some(p=>norm(p)===norm(name));
+    const idx={
+      player:headerIndex(headers,["Speler"]),
+      played:headerIndex(headers,["Wed"]),
+      goals:headerIndex(headers,["Goals"]),
+      assists:headerIndex(headers,["Assists"]),
+      yellow:headerIndex(headers,["Geel"]),
+      red:headerIndex(headers,["Rood"]),
+      motm:headerIndex(headers,["MOTM"]),
+      gw:headerIndex(headers,["G/W"])
+    };
+    if(idx.player<0) throw new Error("Spelerkolom niet gevonden");
+    const wanted=["Thibaud","Tuncay","Tom","Arno","Louis","Xander","Simon","Tibe","Mats","Carlos","Darren","Naam nog in te vullen"];
+    const byName=new Map();
+    rows.slice(headerRowIndex+1).forEach(r=>{
+      const name=String(r[idx.player]||"").trim();
+      const key=norm(name);
+      if(!key || !wanted.some(w=>norm(w)===key) || byName.has(key)) return;
+      byName.set(key,[
+        name,
+        r[idx.played]??"",
+        r[idx.goals]??"",
+        r[idx.assists]??"",
+        r[idx.yellow]??"",
+        r[idx.red]??"",
+        r[idx.motm]??"",
+        r[idx.gw]??""
+      ]);
     });
-    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>Speler</th><th>Wedstr.</th><th>Goals</th><th>Assists</th><th>🟨</th><th>🟥</th><th>⭐</th><th>G/W</th></tr></thead><tbody>';
-    data.forEach(r=>{
-      const player=playerI>=0?r[playerI]:"";
-      out+=`<tr><td><b>${esc(player)}</b></td><td>${esc(playedI>=0?r[playedI]:"")}</td><td>${esc(goalsI>=0?r[goalsI]:"")}</td><td>${esc(assistsI>=0?r[assistsI]:"")}</td><td>${esc(yellowI>=0?r[yellowI]:"")}</td><td>${esc(redI>=0?r[redI]:"")}</td><td>${esc(motmI>=0?r[motmI]:"")}</td><td>${esc(gwI>=0?r[gwI]:"")}</td></tr>`;
-    });
-    out+="</tbody></table></div>";
+    const data=wanted.map(w=>byName.get(norm(w)) || fallback.find(r=>norm(r[0])===norm(w))).filter(Boolean);
+    if(data.length<1) throw new Error("Geen spelersgegevens gevonden");
     box.className="info-card";
-    box.innerHTML=out;
+    box.innerHTML=makeTable(data);
   }catch(e){
     console.error(e);
-    box.className="info-card live-error";
-    box.textContent="De live spelersstatistieken konden nu niet geladen worden. Vernieuw de pagina om opnieuw te proberen.";
+    // Toon de laatst bekende waarden in plaats van een lege pagina.
+    box.className="info-card";
+    box.innerHTML=makeTable(fallback,"Live laden lukt momenteel niet; dit zijn de laatst bekende waarden uit je Klassement.");
   }
 }
 function loadLiveGoogleSheets(){
