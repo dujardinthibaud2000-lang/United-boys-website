@@ -103,6 +103,18 @@ a{text-decoration:none;color:inherit}
  .hero{min-height:480px}.player{flex-basis:330px}.card-grid{grid-template-columns:repeat(4,1fr)}
  .wrap{padding-left:30px;padding-right:30px}
 }
+
+/* LIVE GOOGLE SHEETS */
+.live-status{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;padding:7px 11px;border-radius:999px;background:#e9f7ef;color:#18794e;margin-left:8px}
+.live-dot{width:8px;height:8px;border-radius:50%}
+.live-loading{padding:18px;text-align:center;color:#718096}
+.live-error{padding:18px;border-radius:14px;background:#fff4f4;color:#a33b3b;font-weight:700}
+.live-table-wrap{overflow-x:auto}
+.live-table{width:100%;border-collapse:collapse;min-width:560px}
+.live-table th,.live-table td{padding:12px 10px;border-bottom:1px solid #dce5ef;text-align:left}
+.live-table th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#5c6b7d;background:#f6f9fc}
+.live-table tr.ub-highlight td{font-weight:800;background:#eef6ff}
+
 </style>
 </head>
 <body>
@@ -211,56 +223,15 @@ a{text-decoration:none;color:inherit}
  <div class="match"><div><div class="date">28/04/2027 • 21:00</div><div class="opp">De Kioskvrienden</div><small>Sporthal Zwijnaarde • THUIS</small></div><span class="badge">VOLGEND</span></div>
 </div></section>
 <section id="stand" class="page"><div class="wrap">
- <div class="section-title"><h2>Klassement</h2><span>Actueel</span></div>
- <div class="stand">
-  <div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div>
-  <div class="row"><div>1</div><div><b>Zweet Club</b></div><div>3</div><div>9</div></div>
-  <div class="row"><div>2</div><div><b>HTD United</b></div><div>3</div><div>9</div></div>
-  <div class="row"><div>3</div><div><b>Frigo Loco</b></div><div>3</div><div>9</div></div>
-  <div class="row"><div>4</div><div><b>United Boys</b></div><div>4</div><div>7</div></div>
-  <div class="row"><div>5</div><div>FC De Ploegmoats</div><div>2</div><div>6</div></div>
-  <div class="row"><div>6</div><div>MVC Recubela</div><div>3</div><div>6</div></div>
-  <div class="row"><div>7</div><div>The Black Adders</div><div>4</div><div>4</div></div>
-  <div class="row"><div>8</div><div>Château Des Frites</div><div>3</div><div>4</div></div>
-  <div class="row"><div>9</div><div>Yellow Fever</div><div>3</div><div>3</div></div>
-  <div class="row"><div>10</div><div>Charlie Shot</div><div>4</div><div>3</div></div>
-  <div class="row"><div>11</div><div>Red Star Ghent</div><div>4</div><div>3</div></div>
-  <div class="row"><div>12</div><div>De Balzakskes</div><div>4</div><div>1</div></div>
-  <div class="row"><div>13</div><div>Pantorino FC</div><div>0</div><div>0</div></div>
-  <div class="row"><div>14</div><div>De Kioskvrienden</div><div>4</div><div>0</div></div>
- </div>
+ <div class="section-title"><h2>Klassement <span class="live-status"><span class="live-dot"></span>LIVE</span></h2><span>Uit Google Sheets</span></div>
+ <p class="swipe-note">Dit klassement wordt automatisch uit het United Boys-schema geladen.</p>
+ <div id="live-stand" class="info-card live-loading">Klassement laden…</div>
 </div></section>
 
 <section id="statistieken" class="page"><div class="wrap">
- <div class="section-title"><h2>Statistieken</h2><span>Seizoen 2026–2027</span></div>
- <div class="card-grid">
-  <div class="info-card"><small>WEDSTRIJDEN</small><strong>4</strong></div>
-  <div class="info-card"><small>PUNTEN</small><strong>7</strong></div>
-  <div class="info-card"><small>DOELPUNTEN VOOR</small><strong>26</strong></div>
-  <div class="info-card"><small>DOELPUNTEN TEGEN</small><strong>14</strong></div>
- </div>
- <div class="info-card" style="margin-top:28px;padding:0;overflow:hidden">
-  <div style="padding:22px 20px 8px"><h3 style="margin:0;font-size:24px">Spelersstatistieken</h3><p style="margin:8px 0 0;color:#74829a">Per wedstrijd bij te werken: wedstrijden, goals en kaarten.</p></div>
-  <div style="overflow-x:auto;padding:0 20px 20px">
-   <table style="width:100%;min-width:620px;border-collapse:collapse;text-align:left">
-    <thead><tr style="border-bottom:2px solid #dbe3ef"><th style="padding:14px 10px">Speler</th><th style="padding:14px 10px">Wedstr.</th><th style="padding:14px 10px">Goals</th><th style="padding:14px 10px">🟨</th><th style="padding:14px 10px">🟥</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Thibaud</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Tuncay</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Tom</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Arno</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Louis</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Xander</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Simon</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Tibe</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Mats</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Carlos</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-      <tr><td><strong>Darren</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-    </tbody>
-   </table>
-  </div>
- </div>
- <p class="swipe-note" style="margin-top:20px">Een streepje betekent dat de statistiek nog niet is ingevuld. De gegevens kunnen na elke wedstrijd worden bijgewerkt.</p>
+ <div class="section-title"><h2>Statistieken <span class="live-status"><span class="live-dot"></span>LIVE</span></h2><span>Uit Google Sheets</span></div>
+ <p class="swipe-note">Spelersstatistieken worden automatisch uit het klassement van je spreadsheet geladen.</p>
+ <div id="live-stats" class="info-card live-loading">Statistieken laden…</div>
 </div></section>
 
 <section id="fotos" class="page"><div class="wrap">
@@ -281,7 +252,109 @@ a{text-decoration:none;color:inherit}
 
 <footer class="footer"><strong>UNITED BOYS</strong><p>Minivoetbal • 2026–2027</p></footer>
 
+
 <script>
+const UNITED_BOYS_PUBLISHED_ID = "2PACX-1vSIl4xqCNuUlunBHLtYafADNN2HQoZqh-ncvMztb_RBAbwhM8kFWRDZG2Kf4NA-Uj0hjeezd4H7Tx9F";
+
+function csvUrl(sheetName){
+  return "https://docs.google.com/spreadsheets/d/e/" + UNITED_BOYS_PUBLISHED_ID +
+         "/pub?output=csv&sheet=" + encodeURIComponent(sheetName);
+}
+function parseCSV(text){
+  const rows=[]; let row=[], cell="", quoted=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(c === '"' && quoted && n === '"'){cell+='"'; i++; continue;}
+    if(c === '"'){quoted=!quoted; continue;}
+    if(c === ',' && !quoted){row.push(cell); cell=""; continue;}
+    if((c === '\n' || c === '\r') && !quoted){
+      if(c === '\r' && n === '\n') i++;
+      row.push(cell); cell="";
+      if(row.some(v=>v.trim()!=="")) rows.push(row);
+      row=[];
+      continue;
+    }
+    cell+=c;
+  }
+  if(cell!=="" || row.length){row.push(cell); if(row.some(v=>v.trim()!=="")) rows.push(row);}
+  return rows;
+}
+function norm(v){return String(v??"").trim().toLowerCase();}
+function esc(v){
+  return String(v??"").replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
+async function loadSheet(sheet){
+  const r=await fetch(csvUrl(sheet), {cache:"no-store"});
+  if(!r.ok) throw new Error("Google Sheets kon niet worden geladen");
+  return parseCSV(await r.text());
+}
+function headerIndex(headers, names){
+  for(const name of names){
+    const i=headers.findIndex(h=>norm(h)===norm(name));
+    if(i>=0) return i;
+  }
+  return -1;
+}
+async function loadLiveStand(){
+  const box=document.getElementById("live-stand");
+  try{
+    const rows=await loadSheet("Klassement");
+    if(rows.length<2) throw new Error("Geen klassementgegevens gevonden");
+    const headers=rows[0];
+    const teamI=headerIndex(headers,["Ploeg","Team","Club"]);
+    const playedI=headerIndex(headers,["Gespeeld","Wedstrijden","W"]);
+    const pointsI=headerIndex(headers,["Punten","Pts","P"]);
+    const rankI=headerIndex(headers,["Pos","Nr","#","Plaats"]);
+    const data=rows.slice(1).filter(r=>r.some(x=>String(x).trim()!==""));
+    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>#</th><th>Ploeg</th><th>Wedstr.</th><th>Punten</th></tr></thead><tbody>';
+    data.forEach((r,idx)=>{
+      const team=teamI>=0?r[teamI]:"";
+      const rank=rankI>=0?r[rankI]:(idx+1);
+      const played=playedI>=0?r[playedI]:"";
+      const points=pointsI>=0?r[pointsI]:"";
+      const cls=norm(team)==="united boys"?' class="ub-highlight"':"";
+      out+=`<tr${cls}><td>${esc(rank)}</td><td><b>${esc(team)}</b></td><td>${esc(played)}</td><td>${esc(points)}</td></tr>`;
+    });
+    out+="</tbody></table></div>";
+    box.className="info-card";
+    box.innerHTML=out;
+  }catch(e){
+    box.className="info-card live-error";
+    box.textContent="Het live klassement kon nu niet geladen worden. Vernieuw de pagina om opnieuw te proberen.";
+  }
+}
+async function loadLiveStats(){
+  const box=document.getElementById("live-stats");
+  try{
+    const rows=await loadSheet("Statistieken");
+    if(rows.length<2) throw new Error("Geen statistieken gevonden");
+    const headers=rows[0];
+    const playerI=headerIndex(headers,["Speler","Naam","Player"]);
+    const playedI=headerIndex(headers,["Gespeeld","Wedstrijden","Wed"]);
+    const goalsI=headerIndex(headers,["Goals","Doelpunten","⚽"]);
+    const assistsI=headerIndex(headers,["Assists","Assistenties","🅰️"]);
+    const yellowI=headerIndex(headers,["Geel","🟨"]);
+    const redI=headerIndex(headers,["Rood","🟥"]);
+    const motmI=headerIndex(headers,["MOTM","⭐"]);
+    const data=rows.slice(1).filter(r=>r.some(x=>String(x).trim()!==""));
+    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>Speler</th><th>Wedstr.</th><th>Goals</th><th>Assists</th><th>🟨</th><th>🟥</th><th>⭐</th></tr></thead><tbody>';
+    data.forEach(r=>{
+      const player=playerI>=0?r[playerI]:"";
+      out+=`<tr><td><b>${esc(player)}</b></td><td>${esc(playedI>=0?r[playedI]:"")}</td><td>${esc(goalsI>=0?r[goalsI]:"")}</td><td>${esc(assistsI>=0?r[assistsI]:"")}</td><td>${esc(yellowI>=0?r[yellowI]:"")}</td><td>${esc(redI>=0?r[redI]:"")}</td><td>${esc(motmI>=0?r[motmI]:"")}</td></tr>`;
+    });
+    out+="</tbody></table></div>";
+    box.className="info-card";
+    box.innerHTML=out;
+  }catch(e){
+    box.className="info-card live-error";
+    box.textContent="De live spelersstatistieken konden nu niet geladen worden. Vernieuw de pagina om opnieuw te proberen.";
+  }
+}
+function loadLiveGoogleSheets(){
+  loadLiveStand();
+  loadLiveStats();
+}
+
 function showPage(){
   const id=(location.hash||'#home').substring(1);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -303,6 +376,7 @@ function closeMenu(){
 }
 window.addEventListener('hashchange',showPage);
 showPage();
+loadLiveGoogleSheets();
 </script>
 </body>
 </html>
