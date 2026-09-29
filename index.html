@@ -223,14 +223,29 @@ a{text-decoration:none;color:inherit}
  <div class="match"><div><div class="date">28/04/2027 • 21:00</div><div class="opp">De Kioskvrienden</div><small>Sporthal Zwijnaarde • THUIS</small></div><span class="badge">VOLGEND</span></div>
 </div></section>
 <section id="stand" class="page"><div class="wrap">
- <div class="section-title"><h2>Klassement <span class="live-status"><span class="live-dot"></span>LIVE</span></h2><span>Uit Google Sheets</span></div>
- <p class="swipe-note">Dit klassement wordt automatisch uit het United Boys-schema geladen.</p>
- <div id="live-stand" class="info-card live-loading">Klassement laden…</div>
+ <div class="section-title"><h2>Klassement</h2><span>Actueel</span></div>
+ <div class="stand">
+  <div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div>
+  <div class="row"><div>1</div><div><b>Zweet Club</b></div><div>3</div><div>9</div></div>
+  <div class="row"><div>2</div><div><b>HTD United</b></div><div>3</div><div>9</div></div>
+  <div class="row"><div>3</div><div><b>Frigo Loco</b></div><div>3</div><div>9</div></div>
+  <div class="row"><div>4</div><div><b>United Boys</b></div><div>4</div><div>7</div></div>
+  <div class="row"><div>5</div><div>FC De Ploegmoats</div><div>2</div><div>6</div></div>
+  <div class="row"><div>6</div><div>MVC Recubela</div><div>3</div><div>6</div></div>
+  <div class="row"><div>7</div><div>The Black Adders</div><div>4</div><div>4</div></div>
+  <div class="row"><div>8</div><div>Château Des Frites</div><div>3</div><div>4</div></div>
+  <div class="row"><div>9</div><div>Yellow Fever</div><div>3</div><div>3</div></div>
+  <div class="row"><div>10</div><div>Charlie Shot</div><div>4</div><div>3</div></div>
+  <div class="row"><div>11</div><div>Red Star Ghent</div><div>4</div><div>3</div></div>
+  <div class="row"><div>12</div><div>De Balzakskes</div><div>4</div><div>1</div></div>
+  <div class="row"><div>13</div><div>Pantorino FC</div><div>0</div><div>0</div></div>
+  <div class="row"><div>14</div><div>De Kioskvrienden</div><div>4</div><div>0</div></div>
+ </div>
 </div></section>
 
 <section id="statistieken" class="page"><div class="wrap">
  <div class="section-title"><h2>Statistieken <span class="live-status"><span class="live-dot"></span>LIVE</span></h2><span>Uit Google Sheets</span></div>
- <p class="swipe-note">Spelersstatistieken worden automatisch uit het klassement van je spreadsheet geladen.</p>
+ <p class="swipe-note">Spelersstatistieken worden automatisch uit het tabblad Klassement van je spreadsheet geladen.</p>
  <div id="live-stats" class="info-card live-loading">Statistieken laden…</div>
 </div></section>
 
@@ -296,56 +311,41 @@ function headerIndex(headers, names){
   return -1;
 }
 async function loadLiveStand(){
-  const box=document.getElementById("live-stand");
-  try{
-    const rows=await loadSheet("Klassement");
-    if(rows.length<2) throw new Error("Geen klassementgegevens gevonden");
-    const headers=rows[0];
-    const teamI=headerIndex(headers,["Ploeg","Team","Club"]);
-    const playedI=headerIndex(headers,["Gespeeld","Wedstrijden","W"]);
-    const pointsI=headerIndex(headers,["Punten","Pts","P"]);
-    const rankI=headerIndex(headers,["Pos","Nr","#","Plaats"]);
-    const data=rows.slice(1).filter(r=>r.some(x=>String(x).trim()!==""));
-    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>#</th><th>Ploeg</th><th>Wedstr.</th><th>Punten</th></tr></thead><tbody>';
-    data.forEach((r,idx)=>{
-      const team=teamI>=0?r[teamI]:"";
-      const rank=rankI>=0?r[rankI]:(idx+1);
-      const played=playedI>=0?r[playedI]:"";
-      const points=pointsI>=0?r[pointsI]:"";
-      const cls=norm(team)==="united boys"?' class="ub-highlight"':"";
-      out+=`<tr${cls}><td>${esc(rank)}</td><td><b>${esc(team)}</b></td><td>${esc(played)}</td><td>${esc(points)}</td></tr>`;
-    });
-    out+="</tbody></table></div>";
-    box.className="info-card";
-    box.innerHTML=out;
-  }catch(e){
-    box.className="info-card live-error";
-    box.textContent="Het live klassement kon nu niet geladen worden. Vernieuw de pagina om opnieuw te proberen.";
-  }
+  // Het competitieklassement wordt momenteel handmatig bijgehouden.
+  // De spelersstatistieken hieronder komen wel live uit Google Sheets.
 }
 async function loadLiveStats(){
   const box=document.getElementById("live-stats");
   try{
-    const rows=await loadSheet("Statistieken");
-    if(rows.length<2) throw new Error("Geen statistieken gevonden");
-    const headers=rows[0];
-    const playerI=headerIndex(headers,["Speler","Naam","Player"]);
-    const playedI=headerIndex(headers,["Gespeeld","Wedstrijden","Wed"]);
-    const goalsI=headerIndex(headers,["Goals","Doelpunten","⚽"]);
-    const assistsI=headerIndex(headers,["Assists","Assistenties","🅰️"]);
-    const yellowI=headerIndex(headers,["Geel","🟨"]);
-    const redI=headerIndex(headers,["Rood","🟥"]);
-    const motmI=headerIndex(headers,["MOTM","⭐"]);
-    const data=rows.slice(1).filter(r=>r.some(x=>String(x).trim()!==""));
-    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>Speler</th><th>Wedstr.</th><th>Goals</th><th>Assists</th><th>🟨</th><th>🟥</th><th>⭐</th></tr></thead><tbody>';
+    // De statistieken staan in het tabblad "Klassement". De echte kolomkoppen
+    // staan niet op rij 1, dus eerst zoeken we de rij met "Speler".
+    const rows=await loadSheet("Klassement");
+    const headerRowIndex=rows.findIndex(r=>r.some(v=>norm(v)==="speler"));
+    if(headerRowIndex<0) throw new Error("Kolomkoppen niet gevonden");
+    const headers=rows[headerRowIndex];
+    const playerI=headerIndex(headers,["Speler"]);
+    const playedI=headerIndex(headers,["Wed"]);
+    const goalsI=headerIndex(headers,["Goals"]);
+    const assistsI=headerIndex(headers,["Assists"]);
+    const yellowI=headerIndex(headers,["Geel"]);
+    const redI=headerIndex(headers,["Rood"]);
+    const motmI=headerIndex(headers,["MOTM"]);
+    const gwI=headerIndex(headers,["G/W"]);
+    const playerNames=["Thibaud","Tuncay","Tom","Arno","Louis","Xander","Simon","Tibe","Mats","Carlos","Darren","Naam nog in te vullen"];
+    const data=rows.slice(headerRowIndex+1).filter(r=>{
+      const name=playerI>=0?String(r[playerI]||"").trim():"";
+      return playerNames.some(p=>norm(p)===norm(name));
+    });
+    let out='<div class="live-table-wrap"><table class="live-table"><thead><tr><th>Speler</th><th>Wedstr.</th><th>Goals</th><th>Assists</th><th>🟨</th><th>🟥</th><th>⭐</th><th>G/W</th></tr></thead><tbody>';
     data.forEach(r=>{
       const player=playerI>=0?r[playerI]:"";
-      out+=`<tr><td><b>${esc(player)}</b></td><td>${esc(playedI>=0?r[playedI]:"")}</td><td>${esc(goalsI>=0?r[goalsI]:"")}</td><td>${esc(assistsI>=0?r[assistsI]:"")}</td><td>${esc(yellowI>=0?r[yellowI]:"")}</td><td>${esc(redI>=0?r[redI]:"")}</td><td>${esc(motmI>=0?r[motmI]:"")}</td></tr>`;
+      out+=`<tr><td><b>${esc(player)}</b></td><td>${esc(playedI>=0?r[playedI]:"")}</td><td>${esc(goalsI>=0?r[goalsI]:"")}</td><td>${esc(assistsI>=0?r[assistsI]:"")}</td><td>${esc(yellowI>=0?r[yellowI]:"")}</td><td>${esc(redI>=0?r[redI]:"")}</td><td>${esc(motmI>=0?r[motmI]:"")}</td><td>${esc(gwI>=0?r[gwI]:"")}</td></tr>`;
     });
     out+="</tbody></table></div>";
     box.className="info-card";
     box.innerHTML=out;
   }catch(e){
+    console.error(e);
     box.className="info-card live-error";
     box.textContent="De live spelersstatistieken konden nu niet geladen worden. Vernieuw de pagina om opnieuw te proberen.";
   }
