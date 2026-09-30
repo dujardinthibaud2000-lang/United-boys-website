@@ -1121,82 +1121,196 @@ initSponsorTicker();
 </script>
 
 <style id="ub-player-profile-styles">
-.player { cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; }
-.player:active { transform:scale(.98); }
 .ub-player-overlay{
-  position:fixed; inset:0; z-index:9999; display:none; align-items:flex-end;
-  justify-content:center; background:rgba(0,0,0,.72); padding:12px;
+  position:fixed; inset:0; z-index:9999; display:none;
+  background:#f4f8fc; overflow-y:auto; -webkit-overflow-scrolling:touch;
 }
-.ub-player-overlay.open{display:flex;}
+.ub-player-overlay.open{display:block;}
 .ub-player-card{
-  width:min(100%,560px); max-height:92vh; overflow:auto; background:#061b35;
-  color:#fff; border:1px solid rgba(55,125,220,.55); border-radius:24px 24px 16px 16px;
-  box-shadow:0 24px 70px rgba(0,0,0,.45); padding:22px 18px 24px;
-  position:relative;
+  min-height:100vh; width:100%; max-width:720px; margin:0 auto;
+  background:#f4f8fc; color:#061b35; position:relative; overflow:hidden;
 }
 .ub-player-close{
-  position:absolute; right:14px; top:12px; width:40px; height:40px; border-radius:50%;
-  border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08);
-  color:#fff; font-size:25px; line-height:36px; text-align:center; cursor:pointer;
+  position:absolute; z-index:5; right:14px; top:14px; width:46px; height:46px;
+  border-radius:50%; border:1px solid rgba(255,255,255,.35);
+  background:rgba(3,19,43,.55); color:#fff; font-size:30px; line-height:40px;
+  text-align:center; cursor:pointer; backdrop-filter:blur(8px);
+}
+.ub-player-hero{
+  position:relative; min-height:620px; padding:82px 28px 0;
+  color:#fff; overflow:hidden;
+  background:
+    radial-gradient(circle at 78% 28%, rgba(42,125,235,.32), transparent 28%),
+    linear-gradient(145deg,#031a37 0%,#062a58 52%,#0756a6 100%);
+}
+.ub-player-hero:before{
+  content:""; position:absolute; inset:0; opacity:.16;
+  background:
+    linear-gradient(90deg,transparent 49%,rgba(255,255,255,.12) 50%,transparent 51%),
+    linear-gradient(0deg,transparent 49%,rgba(255,255,255,.10) 50%,transparent 51%);
+  background-size:180px 180px;
+}
+.ub-player-big-number{
+  position:absolute; left:18px; top:115px; font-size:230px; line-height:.8;
+  font-weight:900; color:rgba(255,255,255,.07); letter-spacing:-18px;
+}
+.ub-player-title{
+  position:relative; z-index:2; margin:70px 0 0; max-width:52%;
+}
+.ub-player-first{
+  display:block; font-size:28px; line-height:1; font-weight:900;
+  text-transform:uppercase; letter-spacing:1px;
+}
+.ub-player-last{
+  display:block; color:#2e8cff; font-size:43px; line-height:.95;
+  font-weight:900; text-transform:uppercase; margin-top:4px;
+}
+.ub-player-number{
+  position:relative; z-index:2; font-size:32px; font-weight:900; margin-top:20px;
+}
+.ub-player-line{
+  position:relative; z-index:2; width:150px; height:4px; background:#1682ff;
+  margin:10px 0 10px; border-radius:10px;
+}
+.ub-player-position{
+  position:relative; z-index:2; font-size:20px; font-weight:900;
+  text-transform:uppercase; letter-spacing:1px;
 }
 .ub-player-photo{
-  width:112px; height:112px; margin:4px auto 12px; border-radius:50%;
-  background:linear-gradient(145deg,#0756a6,#0b79df); display:flex; align-items:center;
-  justify-content:center; font-size:48px; font-weight:900; border:4px solid #fff;
+  position:absolute; z-index:2; right:0; bottom:0; width:58%; height:64%;
+  display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
+  border:0; border-radius:0; background:transparent;
+  font-size:120px; font-weight:900; color:rgba(255,255,255,.9);
+}
+.ub-player-photo:before{
+  content:""; position:absolute; width:72%; aspect-ratio:1; bottom:-12%;
+  border-radius:50%; background:rgba(255,255,255,.06);
+}
+.ub-player-photo img{
+  position:relative; z-index:2; width:100%; height:100%; object-fit:contain;
+}
+.ub-player-photo-placeholder{
+  position:relative; z-index:2; width:185px; height:185px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(145deg,#0a66c7,#1687ff); border:5px solid #fff;
+  box-shadow:0 12px 30px rgba(0,0,0,.25); font-size:86px;
+}
+.ub-player-info-bar{
+  position:relative; z-index:4; margin:-34px 22px 0; border-radius:18px;
+  background:#071f3e; color:#fff; border:2px solid #1682ff;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+  box-shadow:0 15px 35px rgba(0,0,0,.18); overflow:hidden;
+}
+.ub-player-info-item{
+  padding:16px 8px; text-align:center; border-right:1px solid rgba(255,255,255,.18);
+}
+.ub-player-info-item:last-child{border-right:0;}
+.ub-player-info-item small{
+  display:block; color:#9fb7d4; text-transform:uppercase; font-size:10px;
+  letter-spacing:.6px; margin-bottom:5px;
+}
+.ub-player-info-item strong{font-size:17px; line-height:1.1;}
+.ub-player-details{
+  margin:10px 22px 0; background:#fff; border-radius:18px;
+  display:grid; grid-template-columns:repeat(2,1fr); box-shadow:0 5px 25px rgba(6,27,53,.08);
   overflow:hidden;
 }
-.ub-player-photo img{width:100%;height:100%;object-fit:cover;}
-.ub-player-name{text-align:center;font-size:30px;font-weight:900;margin:0;}
-.ub-player-number{text-align:center;color:#5ea2ff;font-weight:900;margin:3px 0 18px;}
-.ub-player-meta{
-  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px;
+.ub-player-detail{
+  padding:14px 12px; text-align:center; border-right:1px solid #e5edf6;
+  border-bottom:1px solid #e5edf6;
 }
-.ub-player-meta div,.ub-player-stat{
-  background:rgba(255,255,255,.08); border-radius:12px; padding:11px 8px; text-align:center;
+.ub-player-detail:nth-child(2n){border-right:0;}
+.ub-player-detail:nth-last-child(-n+2){border-bottom:0;}
+.ub-player-detail small{
+  display:block; color:#718096; font-size:11px; text-transform:uppercase; letter-spacing:.4px;
 }
-.ub-player-meta small,.ub-player-stat small{display:block;color:#9fb4cf;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
-.ub-player-meta strong{display:block;margin-top:4px;font-size:16px;}
-.ub-player-bio{
-  display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:14px;
+.ub-player-detail strong{display:block; margin-top:5px; font-size:17px;}
+.ub-player-stats-section{
+  margin:18px 22px 28px; background:#fff; border-radius:20px;
+  padding:22px 14px 18px; box-shadow:0 5px 25px rgba(6,27,53,.08);
 }
+.ub-player-section-title{
+  margin:0 8px 18px; font-size:27px; line-height:1;
+  font-weight:900; text-transform:uppercase; letter-spacing:-.5px;
+}
+.ub-player-section-title span{color:#167cf1;}
+.ub-player-section-line{width:54px;height:4px;background:#167cf1;border-radius:8px;margin:0 8px 16px;}
 .ub-player-stats{
-  display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
 }
-.ub-player-stat strong{display:block;font-size:30px;line-height:1;margin-top:5px;}
-.ub-player-stat.goal strong{color:#fff;}
-.ub-player-hint{text-align:center;color:#9fb4cf;font-size:12px;margin-top:15px;}
-@media(max-width:380px){
-  .ub-player-card{padding:18px 12px 20px;}
-  .ub-player-name{font-size:26px;}
+.ub-player-stat{
+  background:#fff; border:1px solid #dce5ef; border-top:4px solid #167cf1;
+  border-radius:14px; padding:14px 6px; text-align:center;
+  box-shadow:0 2px 8px rgba(6,27,53,.05);
+}
+.ub-player-stat small{display:block;color:#66758a;font-size:10px;font-weight:700;line-height:1.2;text-transform:uppercase;}
+.ub-player-stat strong{display:block;color:#061b35;font-size:34px;line-height:1;margin-top:8px;font-weight:900;}
+.ub-player-stat.card-yellow{border-top-color:#f7c42c;}
+.ub-player-stat.card-red{border-top-color:#e62e55;}
+.ub-player-stat .stat-icon{font-size:22px;display:block;margin-bottom:6px;}
+.ub-player-hint{display:none;}
+@media(max-width:480px){
+  .ub-player-hero{min-height:555px;padding:72px 20px 0;}
+  .ub-player-title{margin-top:58px;max-width:58%;}
+  .ub-player-first{font-size:23px;}
+  .ub-player-last{font-size:36px;}
+  .ub-player-big-number{font-size:190px;top:108px;}
+  .ub-player-photo{width:59%;height:57%;}
+  .ub-player-photo-placeholder{width:145px;height:145px;font-size:68px;}
+  .ub-player-number{font-size:27px;}
+  .ub-player-position{font-size:17px;}
+  .ub-player-info-bar{margin:-28px 14px 0;}
+  .ub-player-info-item{padding:13px 5px;}
+  .ub-player-info-item strong{font-size:15px;}
+  .ub-player-details{margin-left:14px;margin-right:14px;}
+  .ub-player-stats-section{margin-left:14px;margin-right:14px;padding:18px 9px;}
+  .ub-player-section-title{font-size:23px;}
+  .ub-player-stats{gap:8px;}
+  .ub-player-stat{padding:12px 4px;}
+  .ub-player-stat strong{font-size:30px;}
 }
 </style>
 
 <div id="ubPlayerOverlay" class="ub-player-overlay" aria-hidden="true">
-  <div class="ub-player-card" role="dialog" aria-modal="true" aria-labelledby="ubPlayerName">
+  <div class="ub-player-card">
     <button class="ub-player-close" type="button" aria-label="Sluiten">×</button>
-    <div id="ubPlayerPhoto" class="ub-player-photo"></div>
-    <h2 id="ubPlayerName" class="ub-player-name"></h2>
-    <div id="ubPlayerNumber" class="ub-player-number"></div>
-    <div class="ub-player-meta">
-      <div><small>Leeftijd</small><strong id="ubAge">—</strong></div>
-      <div><small>Positie</small><strong id="ubPosition">—</strong></div>
-      <div><small>Nationaliteit</small><strong id="ubNationality">—</strong></div>
+    <section class="ub-player-hero">
+      <div id="ubPlayerBigNumber" class="ub-player-big-number"></div>
+      <div class="ub-player-title">
+        <span id="ubPlayerFirst" class="ub-player-first"></span>
+        <span id="ubPlayerLast" class="ub-player-last"></span>
+      </div>
+      <div id="ubPlayerNumber" class="ub-player-number"></div>
+      <div class="ub-player-line"></div>
+      <div id="ubPlayerPositionHero" class="ub-player-position"></div>
+      <div id="ubPlayerPhoto" class="ub-player-photo"></div>
+    </section>
+
+    <div class="ub-player-info-bar">
+      <div class="ub-player-info-item"><small>Leeftijd</small><strong id="ubAge">—</strong></div>
+      <div class="ub-player-info-item"><small>Positie</small><strong id="ubPosition">—</strong></div>
+      <div class="ub-player-info-item"><small>Geboortedatum</small><strong id="ubBirth">—</strong></div>
     </div>
-    <div class="ub-player-bio">
-      <div><small>Geboortedatum</small><strong id="ubBirth">—</strong></div>
-      <div><small>Favoriete voet</small><strong id="ubFoot">—</strong></div>
+
+    <div class="ub-player-details">
+      <div class="ub-player-detail"><small>Favoriete voet</small><strong id="ubFoot">—</strong></div>
+      <div class="ub-player-detail"><small>Rugnummer</small><strong id="ubNumberDetail">—</strong></div>
     </div>
-    <div class="ub-player-stats">
-      <div class="ub-player-stat"><small>Gele kaarten</small><strong id="ubYellow">0</strong></div>
-      <div class="ub-player-stat"><small>Rode kaarten</small><strong id="ubRed">0</strong></div>
-      <div class="ub-player-stat goal"><small>Doelpunten</small><strong id="ubGoals">0</strong></div>
-      <div class="ub-player-stat"><small>Assists</small><strong id="ubAssists">0</strong></div>
-      <div class="ub-player-stat"><small>Penalty's</small><strong id="ubPenalties">0</strong></div>
-      <div class="ub-player-stat"><small>Schepcorners</small><strong id="ubCorners">0</strong></div>
-    </div>
-    <div class="ub-player-hint">Spelersgegevens kunnen later per speler worden ingevuld.</div>
+
+    <section class="ub-player-stats-section">
+      <h2 class="ub-player-section-title">BELANGRIJKSTE <span>STATISTIEKEN</span></h2>
+      <div class="ub-player-section-line"></div>
+      <div class="ub-player-stats">
+        <div class="ub-player-stat card-yellow"><span class="stat-icon">🟨</span><small>Gele kaarten</small><strong id="ubYellow">0</strong></div>
+        <div class="ub-player-stat card-red"><span class="stat-icon">🟥</span><small>Rode kaarten</small><strong id="ubRed">0</strong></div>
+        <div class="ub-player-stat"><span class="stat-icon">⚽</span><small>Totaal goals</small><strong id="ubGoals">0</strong></div>
+        <div class="ub-player-stat"><span class="stat-icon">👟</span><small>Totaal assists</small><strong id="ubAssists">0</strong></div>
+        <div class="ub-player-stat"><span class="stat-icon">🥅</span><small>Penalty's</small><strong id="ubPenalties">0</strong></div>
+        <div class="ub-player-stat"><span class="stat-icon">🚩</span><small>Schepcorners</small><strong id="ubCorners">0</strong></div>
+      </div>
+    </section>
   </div>
-</div>
+</div></div>
 
 <script id="ub-player-profile-script">
 (function(){
@@ -1234,11 +1348,18 @@ initSponsorTicker();
 
   function openPlayer(name, article){
     const p = data[name] || {};
-    fields.name.textContent = p.full || name;
-    fields.number.textContent = p.number ? 'Rugnummer ' + p.number : 'UNITED BOYS';
+    const parts = (p.full || name).trim().split(/\s+/);
+    const first = parts.shift() || name;
+    const last = parts.join(" ");
+
+    document.getElementById('ubPlayerFirst').textContent = first;
+    document.getElementById('ubPlayerLast').textContent = last;
+    document.getElementById('ubPlayerBigNumber').textContent = p.number || '';
+    document.getElementById('ubPlayerNumber').textContent = p.number ? '#' + p.number : '';
+    document.getElementById('ubNumberDetail').textContent = p.number || '—';
+    document.getElementById('ubPlayerPositionHero').textContent = p.position || '—';
     fields.age.textContent = p.age || '—';
     fields.position.textContent = p.position || '—';
-    fields.nationality.textContent = p.nationality || '—';
     fields.birth.textContent = p.birth || '—';
     fields.foot.textContent = p.foot || '—';
     fields.yellow.textContent = p.yellow ?? 0;
@@ -1254,11 +1375,16 @@ initSponsorTicker();
       const clone = img.cloneNode();
       fields.photo.appendChild(clone);
     } else {
-      fields.photo.textContent = name.charAt(0).toUpperCase();
+      const placeholder = document.createElement('div');
+      placeholder.className = 'ub-player-photo-placeholder';
+      placeholder.textContent = first.charAt(0).toUpperCase();
+      fields.photo.appendChild(placeholder);
     }
+
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
+    overlay.scrollTop = 0;
   }
   function closePlayer(){
     overlay.classList.remove('open');
