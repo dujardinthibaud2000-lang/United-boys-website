@@ -240,6 +240,17 @@ body{background:#020b16;color:#fff}
   .stat-value{font-size:39px}
 }
 
+
+/* Automatische sponsor-carrousel onderaan de website */
+.sponsor-ticker-section{background:#050d18;border-top:1px solid rgba(40,139,255,.22);border-bottom:1px solid rgba(40,139,255,.22);padding:22px 0 24px;overflow:hidden}
+.sponsor-ticker-title{text-align:center;color:#1684ff;font-weight:900;font-size:14px;letter-spacing:.18em;margin-bottom:16px}
+.sponsor-ticker{position:relative;overflow:hidden;width:100%;mask-image:linear-gradient(to right,transparent 0,#000 7%,#000 93%,transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0,#000 7%,#000 93%,transparent 100%)}
+.sponsor-ticker-track{display:flex;width:max-content;align-items:center;gap:28px;animation:unitedBoysSponsors 30s linear infinite;will-change:transform}
+.sponsor-ticker-item{width:150px;height:78px;flex:0 0 150px;background:#fff;border-radius:14px;padding:8px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 22px rgba(0,0,0,.25)}
+.sponsor-ticker-item img{width:100%;height:100%;object-fit:contain;display:block}
+@keyframes unitedBoysSponsors{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:520px){.sponsor-ticker-track{gap:18px;animation-duration:24s}.sponsor-ticker-item{width:125px;height:68px;flex-basis:125px;border-radius:12px}}
+@media(prefers-reduced-motion:reduce){.sponsor-ticker-track{animation:none;transform:none}}
 </style>
 </head>
 <body>
@@ -379,6 +390,13 @@ body{background:#020b16;color:#fff}
 </div></section>
 </main>
 
+
+<section class="sponsor-ticker-section" aria-label="Onze sponsors">
+  <div class="sponsor-ticker-title">ONZE PARTNERS</div>
+  <div class="sponsor-ticker" aria-hidden="true">
+    <div class="sponsor-ticker-track" id="sponsorTickerTrack"></div>
+  </div>
+</section>
 <footer class="footer"><strong>UNITED BOYS</strong><p>Minivoetbal • 2026–2027</p></footer>
 
 
@@ -733,6 +751,25 @@ async function loadHomeCountdown(){
   }
 }
 
+
+function initSponsorTicker(){
+  const track=document.getElementById('sponsorTickerTrack');
+  if(!track) return;
+  const imgs=[...document.querySelectorAll('#sponsors .sponsor-card .sponsor-logo img')];
+  if(!imgs.length) return;
+  const makeSet=()=>imgs.map(img=>{
+    const item=document.createElement('div');
+    item.className='sponsor-ticker-item';
+    const copy=img.cloneNode(true);
+    copy.removeAttribute('width'); copy.removeAttribute('height');
+    item.appendChild(copy);
+    return item;
+  });
+  track.innerHTML='';
+  makeSet().forEach(x=>track.appendChild(x));
+  makeSet().forEach(x=>track.appendChild(x));
+}
+
 function showPage(){
   const id=(location.hash||'#home').substring(1);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -755,6 +792,7 @@ function closeMenu(){
 window.addEventListener('hashchange',showPage);
 showPage();
 loadLiveGoogleSheets();
+initSponsorTicker();
 </script>
 </body>
 </html>
