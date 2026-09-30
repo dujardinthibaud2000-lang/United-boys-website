@@ -615,23 +615,23 @@ body{background:#020b16;color:#fff}
   <p class="swipe-note">Swipe naar links of rechts om door de spelers te gaan →</p>
 
   <div class="position"><h3>DOELMANNEN</h3><div class="scroller">
-    <article class="player"><div class="player-photo"><div class="initial">S</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Simon</h4></div></article>
-    <article class="player"><div class="player-photo"><div class="initial">C</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Carlos</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">S</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Simon Fauconier</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">C</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Carlos Fernandez</h4></div></article>
   </div></div>
 
   <div class="position"><h3>VERDEDIGERS</h3><div class="scroller">
-    <article class="player"><div class="player-photo"><div class="initial">X</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Xander</h4></div></article>
-    <article class="player"><div class="player-photo"><div class="initial">A</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Arno</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">X</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Xander Neyt</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">A</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Arno Laby</h4></div></article>
     <article class="player"><div class="player-photo"><div class="initial">D</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Darren</h4></div></article>
-    <article class="player"><div class="player-photo"><div class="initial">M</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Mats</h4></div></article>
-    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Tibe</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">M</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Mats Creyf</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Tibe Adriaen</h4></div></article>
   </div></div>
 
   <div class="position"><h3>AANVALLERS</h3><div class="scroller">
-    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Thibaud</h4></div></article>
-    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Tuncay</h4></div></article>
-    <article class="player"><div class="player-photo"><div class="initial">L</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Louis</h4></div></article>
-    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Tom</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Thibaud Dujardin</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Tuncay Van Wesemael</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">L</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Louis Calle</h4></div></article>
+    <article class="player"><div class="player-photo"><div class="initial">T</div></div><div class="player-info"><div class="club">UNITED BOYS</div><h4>Tom Vandriessche</h4></div></article>
   </div></div>
  </div>
 </section>
@@ -1119,5 +1119,170 @@ showPage();
 loadLiveGoogleSheets();
 initSponsorTicker();
 </script>
+
+<style id="ub-player-profile-styles">
+.player { cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; }
+.player:active { transform:scale(.98); }
+.ub-player-overlay{
+  position:fixed; inset:0; z-index:9999; display:none; align-items:flex-end;
+  justify-content:center; background:rgba(0,0,0,.72); padding:12px;
+}
+.ub-player-overlay.open{display:flex;}
+.ub-player-card{
+  width:min(100%,560px); max-height:92vh; overflow:auto; background:#061b35;
+  color:#fff; border:1px solid rgba(55,125,220,.55); border-radius:24px 24px 16px 16px;
+  box-shadow:0 24px 70px rgba(0,0,0,.45); padding:22px 18px 24px;
+  position:relative;
+}
+.ub-player-close{
+  position:absolute; right:14px; top:12px; width:40px; height:40px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08);
+  color:#fff; font-size:25px; line-height:36px; text-align:center; cursor:pointer;
+}
+.ub-player-photo{
+  width:112px; height:112px; margin:4px auto 12px; border-radius:50%;
+  background:linear-gradient(145deg,#0756a6,#0b79df); display:flex; align-items:center;
+  justify-content:center; font-size:48px; font-weight:900; border:4px solid #fff;
+  overflow:hidden;
+}
+.ub-player-photo img{width:100%;height:100%;object-fit:cover;}
+.ub-player-name{text-align:center;font-size:30px;font-weight:900;margin:0;}
+.ub-player-number{text-align:center;color:#5ea2ff;font-weight:900;margin:3px 0 18px;}
+.ub-player-meta{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px;
+}
+.ub-player-meta div,.ub-player-stat{
+  background:rgba(255,255,255,.08); border-radius:12px; padding:11px 8px; text-align:center;
+}
+.ub-player-meta small,.ub-player-stat small{display:block;color:#9fb4cf;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.ub-player-meta strong{display:block;margin-top:4px;font-size:16px;}
+.ub-player-bio{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:14px;
+}
+.ub-player-stats{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
+}
+.ub-player-stat strong{display:block;font-size:30px;line-height:1;margin-top:5px;}
+.ub-player-stat.goal strong{color:#fff;}
+.ub-player-hint{text-align:center;color:#9fb4cf;font-size:12px;margin-top:15px;}
+@media(max-width:380px){
+  .ub-player-card{padding:18px 12px 20px;}
+  .ub-player-name{font-size:26px;}
+}
+</style>
+
+<div id="ubPlayerOverlay" class="ub-player-overlay" aria-hidden="true">
+  <div class="ub-player-card" role="dialog" aria-modal="true" aria-labelledby="ubPlayerName">
+    <button class="ub-player-close" type="button" aria-label="Sluiten">×</button>
+    <div id="ubPlayerPhoto" class="ub-player-photo"></div>
+    <h2 id="ubPlayerName" class="ub-player-name"></h2>
+    <div id="ubPlayerNumber" class="ub-player-number"></div>
+    <div class="ub-player-meta">
+      <div><small>Leeftijd</small><strong id="ubAge">—</strong></div>
+      <div><small>Positie</small><strong id="ubPosition">—</strong></div>
+      <div><small>Nationaliteit</small><strong id="ubNationality">—</strong></div>
+    </div>
+    <div class="ub-player-bio">
+      <div><small>Geboortedatum</small><strong id="ubBirth">—</strong></div>
+      <div><small>Favoriete voet</small><strong id="ubFoot">—</strong></div>
+    </div>
+    <div class="ub-player-stats">
+      <div class="ub-player-stat"><small>Gele kaarten</small><strong id="ubYellow">0</strong></div>
+      <div class="ub-player-stat"><small>Rode kaarten</small><strong id="ubRed">0</strong></div>
+      <div class="ub-player-stat goal"><small>Doelpunten</small><strong id="ubGoals">0</strong></div>
+      <div class="ub-player-stat"><small>Assists</small><strong id="ubAssists">0</strong></div>
+      <div class="ub-player-stat"><small>Penalty's</small><strong id="ubPenalties">0</strong></div>
+      <div class="ub-player-stat"><small>Schepcorners</small><strong id="ubCorners">0</strong></div>
+    </div>
+    <div class="ub-player-hint">Spelersgegevens kunnen later per speler worden ingevuld.</div>
+  </div>
+</div>
+
+<script id="ub-player-profile-script">
+(function(){
+  const data = {
+    "Simon": {full:"Simon Fauconier",number:"10",age:"24",position:"Doelman",birth:"06/09/2002",foot:"Links",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Carlos": {full:"Carlos Fernandez",number:"11",age:"49",position:"Doelman",birth:"19/03/1977",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Xander": {full:"Xander Neyt",number:"4",age:"19",position:"Verdediger",birth:"18/07/2007",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Arno": {full:"Arno Laby",number:"3",age:"23",position:"Verdediger",birth:"16/12/2002",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Darren": {full:"Darren",number:"12",age:"23",position:"Verdediger",birth:"04/06/2003",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Mats": {full:"Mats Creyf",number:"19",age:"13",position:"Verdediger",birth:"18/07/2007",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Tibe": {full:"Tibe Adriaen",number:"19",age:"8",position:"Verdediger",birth:"30/01/2007",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Thibaud": {full:"Thibaud Dujardin",number:"23",age:"7",position:"Aanvaller",birth:"30/07/2003",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Tuncay": {full:"Tuncay Van Wesemael",number:"22",age:"16",position:"Aanvaller",birth:"19/12/2003",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Louis": {full:"Louis Calle",number:"21",age:"5",position:"Aanvaller",birth:"11/07/2005",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0},
+    "Tom": {full:"Tom Vandriessche",number:"21",age:"14",position:"Aanvaller",birth:"21/01/2005",foot:"Rechts",yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0}
+  };
+  const overlay = document.getElementById('ubPlayerOverlay');
+  const close = overlay.querySelector('.ub-player-close');
+  const fields = {
+    name:document.getElementById('ubPlayerName'),
+    number:document.getElementById('ubPlayerNumber'),
+    photo:document.getElementById('ubPlayerPhoto'),
+    age:document.getElementById('ubAge'),
+    position:document.getElementById('ubPosition'),
+    nationality:document.getElementById('ubNationality'),
+    birth:document.getElementById('ubBirth'),
+    foot:document.getElementById('ubFoot'),
+    yellow:document.getElementById('ubYellow'),
+    red:document.getElementById('ubRed'),
+    goals:document.getElementById('ubGoals'),
+    assists:document.getElementById('ubAssists'),
+    penalties:document.getElementById('ubPenalties'),
+    corners:document.getElementById('ubCorners')
+  };
+
+  function openPlayer(name, article){
+    const p = data[name] || {};
+    fields.name.textContent = p.full || name;
+    fields.number.textContent = p.number ? 'Rugnummer ' + p.number : 'UNITED BOYS';
+    fields.age.textContent = p.age || '—';
+    fields.position.textContent = p.position || '—';
+    fields.nationality.textContent = p.nationality || '—';
+    fields.birth.textContent = p.birth || '—';
+    fields.foot.textContent = p.foot || '—';
+    fields.yellow.textContent = p.yellow ?? 0;
+    fields.red.textContent = p.red ?? 0;
+    fields.goals.textContent = p.goals ?? 0;
+    fields.assists.textContent = p.assists ?? 0;
+    fields.penalties.textContent = p.penalties ?? 0;
+    fields.corners.textContent = p.corners ?? 0;
+
+    const img = article.querySelector('img');
+    fields.photo.innerHTML = '';
+    if(img && img.src){
+      const clone = img.cloneNode();
+      fields.photo.appendChild(clone);
+    } else {
+      fields.photo.textContent = name.charAt(0).toUpperCase();
+    }
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closePlayer(){
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+
+  document.querySelectorAll('.player').forEach(article=>{
+    const h4 = article.querySelector('h4');
+    if(!h4) return;
+    const name = h4.textContent.trim();
+    article.setAttribute('role','button');
+    article.setAttribute('tabindex','0');
+    article.setAttribute('aria-label','Bekijk profiel van '+name);
+    article.addEventListener('click',()=>openPlayer(name,article));
+    article.addEventListener('keydown',e=>{
+      if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openPlayer(name,article); }
+    });
+  });
+  close.addEventListener('click',closePlayer);
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) closePlayer(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePlayer(); });
+})();
+</script>
+
 </body>
 </html>
