@@ -459,11 +459,11 @@ body{background:#020b16;color:#fff}
     padding-bottom: 24px !important;
   }
   .site-footer img, footer img {
-    max-width: 68% !important;
+    max-width: 58% !important;
     height: auto !important;
   }
   .footer-logo, .footer-club-logo, .club-footer-logo {
-    width: 190px !important;
+    width: 125px !important;
     max-width: 58% !important;
     margin: 0 auto 18px !important;
   }
@@ -483,6 +483,69 @@ body{background:#020b16;color:#fff}
     margin-top: 18px !important;
     font-size: 13px !important;
     line-height: 1.5 !important;
+  }
+}
+</style>
+
+
+<style id="ub-footer-final-mobile">
+/* Compact footer */
+@media (max-width: 700px) {
+  .site-footer, footer {
+    padding-top: 18px !important;
+    padding-bottom: 18px !important;
+  }
+  .footer-logo, .footer-club-logo, .club-footer-logo {
+    width: 125px !important;
+    max-width: 42% !important;
+    margin: 0 auto 10px !important;
+  }
+  .footer-rbfa, .rbfa-footer, .footer-belgium {
+    max-width: 58% !important;
+    margin: 5px auto 10px !important;
+  }
+  .footer-socials, .social-links {
+    gap: 8px !important;
+    margin-top: 8px !important;
+  }
+  .footer-socials a, .social-links a {
+    width: 46px !important;
+    height: 46px !important;
+  }
+  .footer-copyright {
+    margin-top: 10px !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+/* Keep the sponsor logos continuously moving */
+.sponsor-track {
+  display: flex !important;
+  width: max-content !important;
+  animation: ubSponsorScroll 24s linear infinite !important;
+  will-change: transform;
+}
+.sponsor-carousel-track {
+  display: flex !important;
+  width: max-content !important;
+  animation: ubSponsorScroll 24s linear infinite !important;
+  will-change: transform;
+}
+@keyframes ubSponsorScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+</style>
+
+
+<style id="ub-extra-small-logo">
+@media (max-width:700px) {
+  .footer-logo, .footer-club-logo, .club-footer-logo {
+    width: 85px !important;
+    max-width: 30% !important;
+    height: auto !important;
+    margin: 0 auto 8px !important;
   }
 }
 </style>
