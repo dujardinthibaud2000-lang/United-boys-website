@@ -90,6 +90,11 @@ a{text-decoration:none;color:inherit}
 .matches-list{display:flex;flex-direction:column;gap:10px}.match{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin:0;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .match .date{font-size:12px;color:var(--muted);font-weight:800}
 .match .opp{font-weight:900;margin-top:5px}
+.match-result{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.result-letter{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900}
+.result-win{background:#dff7e8;color:#16803c}
+.result-loss{background:#ffe3e3;color:#c62828}
+.result-draw{background:#fff1cf;color:#a66a00}
 .badge{font-size:11px;font-weight:900;padding:7px 9px;border-radius:999px;background:#e8f3ff;color:var(--blue)}
 .stand{background:white;border-radius:18px;border:1px solid var(--line);overflow:hidden}
 .row{display:grid;grid-template-columns:34px 1fr 42px 42px;padding:12px 14px;border-bottom:1px solid var(--line);font-size:13px;align-items:center}
@@ -1048,9 +1053,26 @@ async function loadLiveMatches(){
     let html="";
     normalized.forEach(x=>{
       const isPlayed=!!x.score;
-      const badge=isPlayed ? esc(x.score) : (!nextFound ? "VOLGENDE" : "VOLGEND");
-      if(!isPlayed && !nextFound) nextFound=true;
-      html+=`<div class="match"><div><div class="date">${esc(x.date)} • ${esc(x.time)}</div><div class="opp">${esc(x.opp)}</div><small>${esc(x.location)} • ${esc(x.homeAway)}</small></div><span class="badge">${badge}</span></div>`;
+      let resultHtml = '';
+      if(isPlayed){
+        const m=String(x.score).match(/(\d+)\s*[-:]\s*(\d+)/);
+        let letter='G', cls='result-draw';
+        if(m){
+          const a=Number(m[1]), b=Number(m[2]);
+          const isHome=String(x.homeAway).toUpperCase().includes('THUIS');
+          const isAway=String(x.homeAway).toUpperCase().includes('UIT');
+          const won=(isHome && a>b) || (isAway && b>a);
+          const lost=(isHome && a<b) || (isAway && b<a);
+          if(won){ letter='W'; cls='result-win'; }
+          else if(lost){ letter='V'; cls='result-loss'; }
+        }
+        resultHtml=`<div class="match-result"><span class="result-letter ${cls}">${letter}</span><span class="badge">${esc(x.score)}</span></div>`;
+      }else{
+        const badge=!nextFound ? "VOLGENDE" : "VOLGEND";
+        if(!nextFound) nextFound=true;
+        resultHtml=`<span class="badge">${badge}</span>`;
+      }
+      html+=`<div class="match"><div><div class="date">${esc(x.date)} • ${esc(x.time)}</div><div class="opp">${esc(x.opp)}</div><small>${esc(x.location)} • ${esc(x.homeAway)}</small></div>${resultHtml}</div>`;
     });
     box.className="matches-list";
     box.innerHTML=html;
