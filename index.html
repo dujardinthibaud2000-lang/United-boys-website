@@ -653,6 +653,25 @@ body{background:#020b16;color:#fff}
 }
 .ub-card-stats b{display:block;color:#fff;font-size:12px;margin-top:2px;}
 </style>
+
+<style id="ub-home-dashboard-styles">
+#home .ub-dashboard-wrap{padding-top:22px;padding-bottom:34px}
+.ub-dashboard{background:linear-gradient(145deg,rgba(3,19,39,.98),rgba(4,29,57,.96));border:1px solid rgba(44,132,255,.42);border-radius:28px;padding:20px;box-shadow:0 18px 55px rgba(0,0,0,.30);color:#fff}
+.ub-dash-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
+.ub-dash-title{font-size:29px;line-height:1;font-weight:950;text-transform:uppercase;letter-spacing:-.8px;margin:0}.ub-dash-title span{color:#1682ff}.ub-dash-season{font-size:13px;font-weight:800;color:#9db8d8;white-space:nowrap}
+.ub-dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ub-dash-stat{background:rgba(5,28,55,.9);border:1px solid rgba(53,133,225,.3);border-radius:18px;padding:16px 10px;text-align:center;min-height:116px;display:flex;flex-direction:column;justify-content:center}
+.ub-dash-stat-label{font-size:11px;color:#9fb7d4;text-transform:uppercase;font-weight:800;letter-spacing:.5px}.ub-dash-stat-value{font-size:32px;line-height:1;margin:9px 0 5px;font-weight:950}.ub-dash-stat-sub{font-size:11px;color:#9fb7d4;font-weight:700}
+.ub-dash-dot{width:14px;height:14px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:-1px}.ub-dash-win .ub-dash-dot{background:#35d47a}.ub-dash-draw .ub-dash-dot{background:#f6c453}.ub-dash-loss .ub-dash-dot{background:#f16b76}
+.ub-dash-extra{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:10px;margin-top:10px}.ub-dash-extra-card{background:rgba(5,28,55,.9);border:1px solid rgba(53,133,225,.3);border-radius:18px;padding:15px;text-align:center}.ub-dash-extra-label{font-size:10px;color:#9fb7d4;text-transform:uppercase;font-weight:800}.ub-dash-extra-value{font-size:24px;font-weight:950;margin-top:7px}.ub-dash-extra-value.blue{color:#1682ff}.ub-dash-extra-value.green{color:#35d47a}
+.ub-home-match{margin-top:16px;border:1px solid rgba(44,132,255,.55);border-radius:24px;overflow:hidden;background:linear-gradient(145deg,rgba(3,18,37,.98),rgba(5,27,52,.92));box-shadow:0 15px 40px rgba(0,0,0,.22)}
+.ub-home-match-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:17px 18px 5px}.ub-home-match-title{font-size:20px;font-weight:950;text-transform:uppercase}.ub-home-match-title span{color:#1682ff}.ub-home-match-date{font-size:11px;color:#a5bad3;font-weight:800;white-space:nowrap}
+.ub-home-scoreline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 20px 22px}.ub-home-team{text-align:center;font-weight:900;font-size:15px}.ub-home-team .ub-team-mark{width:58px;height:58px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:rgba(22,130,255,.10);border:1px solid rgba(22,130,255,.35);font-size:29px}.ub-home-score{font-size:54px;font-weight:950;letter-spacing:-2px}.ub-home-score span{opacity:.55;padding:0 6px}.ub-home-status{display:inline-block;margin-top:10px;background:#19c967;color:#fff;border-radius:999px;padding:8px 18px;font-size:12px;font-weight:950}.ub-home-match-next{border-color:rgba(44,132,255,.38)}.ub-home-next-body{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 20px 22px}.ub-home-next-team{display:flex;align-items:center;gap:14px;font-size:20px;font-weight:900}.ub-home-next-team .ub-team-mark{width:58px;height:58px;flex:none}.ub-home-next-meta{font-size:13px;color:#a5bad3;font-weight:700;margin-top:3px}.ub-home-next-badge{background:#eef7ff;color:#1475df;border-radius:999px;padding:11px 17px;font-weight:950;font-size:12px;white-space:nowrap}
+@media(max-width:700px){
+ #home .ub-dashboard-wrap{padding-left:14px;padding-right:14px}
+ .ub-dashboard{padding:15px;border-radius:22px}.ub-dash-title{font-size:24px}.ub-dash-season{font-size:11px}.ub-dash-grid{grid-template-columns:repeat(2,1fr)}.ub-dash-stat{min-height:104px;padding:13px 8px}.ub-dash-stat-value{font-size:29px}.ub-dash-extra{grid-template-columns:1fr 1fr}.ub-dash-extra-card:first-child{grid-column:1/-1}.ub-home-match-top{padding:15px 15px 3px}.ub-home-match-title{font-size:18px}.ub-home-match-date{font-size:10px}.ub-home-scoreline{padding:16px 10px 19px;gap:6px}.ub-home-score{font-size:44px}.ub-home-team{font-size:13px}.ub-home-team .ub-team-mark{width:50px;height:50px;font-size:24px}.ub-home-next-body{padding:16px 15px 20px}.ub-home-next-team{font-size:17px}.ub-home-next-team .ub-team-mark{width:50px;height:50px}.ub-home-next-badge{padding:10px 13px;font-size:11px}
+}
+</style>
 </head>
 <body>
 
@@ -681,35 +700,42 @@ body{background:#020b16;color:#fff}
     <h1><span class="white">UNITED</span><br><span class="blue">BOYS</span></h1>
     <p>Welkom op de officiële website van United Boys. Onze ploeg, wedstrijden, resultaten en klassement — allemaal op één plek.</p>
   </div></div>
-  <div class="wrap">
-
-    <div id="countdown-card" class="countdown-card">
-      <div class="countdown-label">Aftellen tot aftrap</div>
-      <div id="countdown-match" class="countdown-match">United Boys vs Frigo Loco</div>
-      <div id="countdown-meta" class="countdown-meta">2 oktober 2026 • 21:00 • Sporthal Zwijnaarde</div>
-      <div class="countdown-grid">
-        <div class="countdown-unit"><div id="cd-days" class="countdown-number">--</div><div class="countdown-name">Dagen</div></div>
-        <div class="countdown-unit"><div id="cd-hours" class="countdown-number">--</div><div class="countdown-name">Uren</div></div>
-        <div class="countdown-unit"><div id="cd-minutes" class="countdown-number">--</div><div class="countdown-name">Min</div></div>
-        <div class="countdown-unit"><div id="cd-seconds" class="countdown-number">--</div><div class="countdown-name">Sec</div></div>
-      </div>
+  <div class="ub-dashboard-wrap wrap">
+  <div class="ub-dashboard">
+    <div class="ub-dash-head">
+      <h2 class="ub-dash-title">SEIZOEN IN <span>CIJFERS</span></h2>
+      <div class="ub-dash-season">2026–2027</div>
     </div>
-
-    <div class="section-title"><h2>Volgende wedstrijd</h2><span>Match 5</span></div>
-    <div class="next">
-      <div class="date">02 OKTOBER 2026 • 21:00</div>
-      <h3>Frigo Loco</h3>
-      <p>Sporthal Zwijnaarde • UITWEDSTRIJD</p>
-      <a class="btn" href="#wedstrijden">Bekijk alle wedstrijden</a>
+    <div class="ub-dash-grid">
+      <div class="ub-dash-stat"><div class="ub-dash-stat-label">Wedstrijden</div><div id="ubDashPlayed" class="ub-dash-stat-value">4</div><div class="ub-dash-stat-sub">GESPEELD</div></div>
+      <div class="ub-dash-stat ub-dash-win"><div class="ub-dash-stat-label"><span class="ub-dash-dot"></span>Winst</div><div id="ubDashWins" class="ub-dash-stat-value">2</div><div class="ub-dash-stat-sub">WEDSTRIJDEN</div></div>
+      <div class="ub-dash-stat ub-dash-draw"><div class="ub-dash-stat-label"><span class="ub-dash-dot"></span>Gelijk</div><div id="ubDashDraws" class="ub-dash-stat-value">1</div><div class="ub-dash-stat-sub">WEDSTRIJDEN</div></div>
+      <div class="ub-dash-stat ub-dash-loss"><div class="ub-dash-stat-label"><span class="ub-dash-dot"></span>Verlies</div><div id="ubDashLosses" class="ub-dash-stat-value">1</div><div class="ub-dash-stat-sub">WEDSTRIJDEN</div></div>
     </div>
-    <div class="section-title"><h2>Laatste resultaat</h2><span>Match 4</span></div>
-    <div class="next">
-      <div class="date">25 SEPTEMBER 2026 • 21:00</div>
-      <h3>United Boys 5–0 Charlie Shot</h3>
-      <p>Sporthal Mariakerke • THUISWEDSTRIJD</p>
-      <a class="btn" href="#wedstrijden">Bekijk alle wedstrijden</a>
+    <div class="ub-dash-extra">
+      <div class="ub-dash-extra-card"><div class="ub-dash-extra-label">Doelsaldo</div><div id="ubDashGoals" class="ub-dash-extra-value green">26 - 14 <small style="font-size:14px">(+12)</small></div></div>
+      <div class="ub-dash-extra-card"><div class="ub-dash-extra-label">Topscorer</div><div id="ubDashTopScorer" class="ub-dash-extra-value blue">Tuncay <small style="font-size:13px">9 goals</small></div></div>
+      <div class="ub-dash-extra-card"><div class="ub-dash-extra-label">Meeste assists</div><div id="ubDashTopAssist" class="ub-dash-extra-value blue">Tuncay <small style="font-size:13px">3 assists</small></div></div>
     </div>
   </div>
+
+  <div id="ubDashLast" class="ub-home-match">
+    <div class="ub-home-match-top"><div class="ub-home-match-title">LAATSTE <span>WEDSTRIJD</span></div><div id="ubDashLastDate" class="ub-home-match-date">25/09/2026 • 21u</div></div>
+    <div class="ub-home-scoreline">
+      <div class="ub-home-team"><div class="ub-team-mark">⚽</div><div>United Boys</div></div>
+      <div><div id="ubDashLastScore" class="ub-home-score">5<span>–</span>0</div><div id="ubDashLastStatus" class="ub-home-status">WINST</div></div>
+      <div class="ub-home-team"><div class="ub-team-mark">⚽</div><div id="ubDashLastOpp">Charlie shot</div></div>
+    </div>
+  </div>
+
+  <div id="ubDashNext" class="ub-home-match ub-home-match-next">
+    <div class="ub-home-match-top"><div class="ub-home-match-title">KOMENDE <span>WEDSTRIJD</span></div><div id="ubDashNextDate" class="ub-home-match-date">02/10/2026 • 21u</div></div>
+    <div class="ub-home-next-body">
+      <div><div class="ub-home-next-team"><div class="ub-team-mark">⚽</div><div><div id="ubDashNextOpp">Frigo loco</div><div id="ubDashNextMeta" class="ub-home-next-meta">Sporthal Zwijnaarde • UIT</div></div></div></div>
+      <div class="ub-home-next-badge">VOLGENDE</div>
+    </div>
+  </div>
+</div>
 </section>
 
 <section id="ploeg" class="page">
@@ -1134,12 +1160,67 @@ async function loadLiveNews(){
     render(fallback);
   }
 }
+
+async function loadHomeDashboard(){
+  const fallbackMatches=[
+    [1,"04/09/2026","de balzakskes","","7-7","19u","Sporthal Mariakerke"],
+    [2,"11/09/2026","red star gent","","12-2","22u","Sporthal Rooienbreken"],
+    [3,"14/09/2026","FC de ploegmoats","","2-5","19u","Sporthal Hogeschool"],
+    [4,"25/09/2026","Charlie shot","","5-0","21u","Sporthal Mariakerke"],
+    [5,"02/10/2026","Frigo loco","","","21u","Sporthal Zwijnaarde"]
+  ];
+  // Alleen noodwaarden als Google Sheets tijdelijk niet bereikbaar is. Live Sheet-data krijgt voorrang.
+  const fallbackStats=[['Tuncay',9,3],['Arno',7,2],['Simon',0,4],['Tom',2,1]];
+  const render=(matches,stats)=>{
+    const played=matches.filter(m=>m[4]);
+    let wins=0,draws=0,losses=0,forGoals=0,againstGoals=0;
+    const homeAway=["UIT","THUIS","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","UIT","UIT","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","THUIS","THUIS"];
+    played.forEach(m=>{
+      const sm=String(m[4]).match(/(\d+)\s*[-:]\s*(\d+)/); if(!sm) return;
+      const a=Number(sm[1]),b=Number(sm[2]); const ha=homeAway[(Number(m[0])||1)-1]||'THUIS';
+      const gf=ha.includes('THUIS')?a:b, ga=ha.includes('THUIS')?b:a; forGoals+=gf; againstGoals+=ga;
+      if(gf>ga) wins++; else if(gf<ga) losses++; else draws++;
+    });
+    document.getElementById('ubDashPlayed').textContent=played.length;
+    document.getElementById('ubDashWins').textContent=wins; document.getElementById('ubDashDraws').textContent=draws; document.getElementById('ubDashLosses').textContent=losses;
+    const gd=forGoals-againstGoals; document.getElementById('ubDashGoals').innerHTML=`${forGoals} - ${againstGoals} <small style="font-size:14px">(${gd>=0?'+':''}${gd})</small>`;
+    const topG=[...stats].sort((a,b)=>Number(b[1])-Number(a[1])||Number(b[2])-Number(a[2]))[0];
+    const topA=[...stats].sort((a,b)=>Number(b[2])-Number(a[2])||Number(b[1])-Number(a[1]))[0];
+    if(topG) document.getElementById('ubDashTopScorer').innerHTML=`${esc(topG[0])} <small style="font-size:13px">${esc(topG[1])} goals</small>`;
+    if(topA) document.getElementById('ubDashTopAssist').innerHTML=`${esc(topA[0])} <small style="font-size:13px">${esc(topA[2])} assists</small>`;
+    const sorted=[...matches].sort((a,b)=>Number(a[0])-Number(b[0])); const playedSorted=sorted.filter(m=>m[4]); const last=playedSorted[playedSorted.length-1]; const next=sorted.find(m=>!m[4]);
+    const fmt=(d,t)=>`${d||''} • ${t||''}`;
+    if(last){document.getElementById('ubDashLastDate').textContent=fmt(last[1],last[5]);document.getElementById('ubDashLastOpp').textContent=last[2];document.getElementById('ubDashLastScore').innerHTML=String(last[4]).replace(/\s*[-:]\s*/, '<span>–</span>');}
+    if(next){document.getElementById('ubDashNextDate').textContent=fmt(next[1],next[5]);document.getElementById('ubDashNextOpp').textContent=next[2];document.getElementById('ubDashNextMeta').textContent=`${next[6]||''} • ${homeAway[(Number(next[0])||1)-1]||''}`;}
+  };
+  try{
+    const matchRows=await loadSheet('Wedstrijdresultaten');
+    const hi=matchRows.findIndex(r=>{const h=r.map(norm);return h.includes('datum')&&h.includes('tegenstander')&&h.includes('score')});
+    if(hi<0) throw new Error('wedstrijdkoppen'); const h=matchRows[hi];
+    const mi={num:headerIndex(h,['#']),date:headerIndex(h,['Datum']),opp:headerIndex(h,['Tegenstander']),score:headerIndex(h,['Score']),time:headerIndex(h,['Uur']),location:headerIndex(h,['Opmerking'])};
+    const matches=matchRows.slice(hi+1).map((r,i)=>[mi.num>=0&&r[mi.num]?r[mi.num]:String(i+1),r[mi.date]||'',r[mi.opp]||'', '',r[mi.score]||'',r[mi.time]||'',r[mi.location]||'']).filter(r=>r[1]&&r[2]);
+    let stats=[]; try{
+      const rows=await loadSheet('Wedstrijd per wedstrijd'); const sh=rows.findIndex(r=>r.some(v=>norm(v)==='speler')); if(sh<0) throw 0; const hh=rows[sh];
+      const ix={p:headerIndex(hh,['Speler']),g:headerIndex(hh,['Goals']),a:headerIndex(hh,['Assists'])}; const map=new Map();
+      rows.slice(sh+1).forEach(r=>{
+        const n=String(r[ix.p]||'').trim(); if(!n)return;
+        const g=parseFloat(String(r[ix.g]||0).replace(',','.'))||0;
+        const a=parseFloat(String(r[ix.a]||0).replace(',','.'))||0;
+        const k=norm(n);
+        const old=map.get(k)||[n,0,0]; old[1]+=g; old[2]+=a; map.set(k,old);
+      });
+      stats=[...map.values()].filter(r=>r[0]);
+    }catch(e){stats=fallbackStats;}
+    render(matches,stats);
+  }catch(e){render(fallbackMatches,fallbackStats);}
+}
 function loadLiveGoogleSheets(){
   loadLiveStand();
   loadLiveStats();
   loadLiveMatches();
   loadLiveNews();
   loadHomeCountdown();
+  loadHomeDashboard();
 }
 
 
