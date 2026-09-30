@@ -854,7 +854,10 @@ function esc(v){
   return String(v??"").replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
 async function loadSheet(sheet){
-  const r=await fetch(csvUrl(sheet), {cache:"no-store"});
+  // Cache-buster zodat nieuwe wedstrijdstatistieken zo snel mogelijk zichtbaar zijn.
+  const base = csvUrl(sheet);
+  const url = base + (base.includes("?") ? "&" : "?") + "ub=" + Date.now();
+  const r=await fetch(url, {cache:"no-store"});
   if(!r.ok) throw new Error("Google Sheets kon niet worden geladen");
   return parseCSV(await r.text());
 }
@@ -1397,7 +1400,7 @@ initSponsorTicker();
 
     <section class="ub-player-stats-section">
       <h2 class="ub-player-section-title">BELANGRIJKSTE <span>STATISTIEKEN</span></h2>
-      <div class="ub-player-section-line"></div>
+      <div class="ub-player-section-line"></div><div id="ubPlayerLiveStatus" style="font-size:11px;color:#718096;margin:-8px 8px 12px">Statistieken worden automatisch bijgewerkt vanuit de wedstrijdgegevens.</div>
       <div class="ub-player-stats">
         <div class="ub-player-stat card-yellow"><span class="stat-icon">🟨</span><small>Gele kaarten</small><strong id="ubYellow">0</strong></div>
         <div class="ub-player-stat card-red"><span class="stat-icon">🟥</span><small>Rode kaarten</small><strong id="ubRed">0</strong></div>
@@ -1441,6 +1444,65 @@ initSponsorTicker();
     corners:document.getElementById('ubCorners')
   };
 
+
+  async function loadPlayerLiveStats(name){
+    const p = data[name] || {};
+    const fallback = {
+      yellow:p.yellow ?? 0, red:p.red ?? 0, goals:p.goals ?? 0,
+      assists:p.assists ?? 0, penalties:p.penalties ?? 0, corners:p.corners ?? 0
+    };
+    try{
+      const rows = await loadSheet("Wedstrijd per wedstrijd");
+      const headerRowIndex = rows.findIndex(r=>r.some(v=>norm(v)==="speler"));
+      if(headerRowIndex < 0) throw new Error("Speler-kolom niet gevonden");
+      const headers=rows[headerRowIndex];
+      const idx={
+        player:headerIndex(headers,["Speler"]),
+        goals:headerIndex(headers,["Goals","Doelpunten"]),
+        assists:headerIndex(headers,["Assists"]),
+        yellow:headerIndex(headers,["Geel","Gele kaarten"]),
+        red:headerIndex(headers,["Rood","Rode kaarten"]),
+        penalties:headerIndex(headers,["Penalty's","Penalties","Penalty"]),
+        corners:headerIndex(headers,["Schepcorners","Schep corners","Corners"])
+      };
+      if(idx.player<0) throw new Error("Speler-kolom niet gevonden");
+
+      const wantedKey=norm(name);
+      const num=v=>{
+        const n=parseFloat(String(v??"").replace(",","."));
+        return Number.isFinite(n)?n:0;
+      };
+      const total={yellow:0,red:0,goals:0,assists:0,penalties:0,corners:0};
+      let found=false;
+
+      rows.slice(headerRowIndex+1).forEach(r=>{
+        const raw=String(r[idx.player]??"").trim();
+        const key=norm(raw);
+        if(key!==wantedKey && key!==norm(p.full||"")) return;
+        found=true;
+        if(idx.goals>=0) total.goals+=num(r[idx.goals]);
+        if(idx.assists>=0) total.assists+=num(r[idx.assists]);
+        if(idx.yellow>=0) total.yellow+=num(r[idx.yellow]);
+        if(idx.red>=0) total.red+=num(r[idx.red]);
+        if(idx.penalties>=0) total.penalties+=num(r[idx.penalties]);
+        if(idx.corners>=0) total.corners+=num(r[idx.corners]);
+      });
+
+      if(found){
+        Object.assign(p,total);
+      }
+    }catch(e){
+      console.warn("Live statistieken konden niet worden geladen voor",name,e);
+    }
+
+    fields.yellow.textContent=p.yellow ?? fallback.yellow;
+    fields.red.textContent=p.red ?? fallback.red;
+    fields.goals.textContent=p.goals ?? fallback.goals;
+    fields.assists.textContent=p.assists ?? fallback.assists;
+    fields.penalties.textContent=p.penalties ?? fallback.penalties;
+    fields.corners.textContent=p.corners ?? fallback.corners;
+  }
+
   function openPlayer(name, article){
     const p = data[name] || {};
     const parts = (p.full || name).trim().split(/\s+/);
@@ -1480,6 +1542,8 @@ initSponsorTicker();
     overlay.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
     overlay.scrollTop = 0;
+    // Toon onmiddellijk de laatst bekende waarden en ververs daarna vanuit Google Sheets.
+    loadPlayerLiveStats(name);
   }
   function closePlayer(){
     overlay.classList.remove('open');
