@@ -1398,12 +1398,14 @@ initSponsorTicker();
     const h4 = article.querySelector('h4');
     if(!h4) return;
     const name = h4.textContent.trim();
+    const playerKey = Object.keys(data).find(k => k === name || data[k].full === name) || name;
+    article.dataset.playerKey = playerKey;
     article.setAttribute('role','button');
     article.setAttribute('tabindex','0');
     article.setAttribute('aria-label','Bekijk profiel van '+name);
-    article.addEventListener('click',()=>openPlayer(name,article));
+    article.addEventListener('click',()=>openPlayer(playerKey,article));
     article.addEventListener('keydown',e=>{
-      if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openPlayer(name,article); }
+      if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openPlayer(playerKey,article); }
     });
   });
   close.addEventListener('click',closePlayer);
