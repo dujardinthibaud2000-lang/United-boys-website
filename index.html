@@ -1366,7 +1366,7 @@ initSponsorTicker();
   font-weight:900; color:rgba(255,255,255,.07); letter-spacing:-18px;
 }
 .ub-player-title{
-  position:relative; z-index:2; margin:70px 0 0; max-width:52%;
+  position:relative; z-index:3; margin:70px 0 0; max-width:52%;
 }
 .ub-player-first{
   display:block; font-size:28px; line-height:1; font-weight:900;
@@ -1377,19 +1377,19 @@ initSponsorTicker();
   font-weight:900; text-transform:uppercase; margin-top:4px;
 }
 .ub-player-number{
-  position:relative; z-index:2; font-size:32px; font-weight:900; margin-top:20px;
+  position:relative; z-index:3; font-size:32px; font-weight:900; margin-top:20px;
 }
 .ub-player-line{
-  position:relative; z-index:2; width:150px; height:4px; background:#1682ff;
+  position:relative; z-index:3; width:150px; height:4px; background:#1682ff;
   margin:10px 0 10px; border-radius:10px;
 }
 .ub-player-position{
-  position:relative; z-index:2; font-size:20px; font-weight:900;
+  position:relative; z-index:3; font-size:20px; font-weight:900;
   text-transform:uppercase; letter-spacing:1px;
 }
 .ub-player-photo{
-  position:absolute; z-index:2; right:0; bottom:0; width:58%; height:64%;
-  display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
+  position:absolute; z-index:1; inset:0; width:100%; height:100%;
+  display:flex; align-items:stretch; justify-content:stretch; overflow:hidden;
   border:0; border-radius:0; background:transparent;
   font-size:120px; font-weight:900; color:rgba(255,255,255,.9);
 }
@@ -1398,7 +1398,7 @@ initSponsorTicker();
   border-radius:50%; background:rgba(255,255,255,.06);
 }
 .ub-player-photo img{
-  position:relative; z-index:2; width:100%; height:100%; object-fit:contain;
+  position:absolute; z-index:1; inset:0; width:100%; height:100%; object-fit:cover; object-position:center top;
 }
 .ub-player-photo-placeholder{
   position:relative; z-index:2; width:185px; height:185px; border-radius:50%;
@@ -1466,7 +1466,7 @@ initSponsorTicker();
   .ub-player-first{font-size:23px;}
   .ub-player-last{font-size:36px;}
   .ub-player-big-number{font-size:190px;top:108px;}
-  .ub-player-photo{width:59%;height:57%;}
+  .ub-player-photo{width:100%;height:100%;}
   .ub-player-photo-placeholder{width:145px;height:145px;font-size:68px;}
   .ub-player-number{font-size:27px;}
   .ub-player-position{font-size:17px;}
