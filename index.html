@@ -718,8 +718,8 @@ body{background:#020b16;color:#fff}
   <div class="ub-dashboard-wrap wrap">
   <div id="homeCountdown" class="countdown-card">
     <div class="countdown-label">⏳ AFTELLEN NAAR DE VOLGENDE WEDSTRIJD</div>
-    <div id="countdown-match" class="countdown-match">United Boys vs Frigo Loco</div>
-    <div id="countdown-meta" class="countdown-meta">2 oktober 2026 • 21u • Sporthal Zwijnaarde</div>
+    <div id="countdown-match" class="countdown-match">United Boys vs Yellow Fever</div>
+    <div id="countdown-meta" class="countdown-meta">9 oktober 2026 • 21u • Sporthal Hogeschool</div>
     <div class="countdown-grid">
       <div class="countdown-unit"><div id="cd-days" class="countdown-number">00</div><div class="countdown-name">Dagen</div></div>
       <div class="countdown-unit"><div id="cd-hours" class="countdown-number">00</div><div class="countdown-name">Uren</div></div>
@@ -987,199 +987,106 @@ async function loadLiveStats(){
   const box=document.getElementById("live-stats");
   const wanted=["Thibaud","Tuncay","Tom","Arno","Louis","Xander","Simon","Tibe","Mats","Carlos","Darren"];
   const fallback={
-    "Thibaud":[0,0,0,0,0,0],"Tuncay":[3,9,3,0,0,2],"Tom":[1,2,1,0,0,0],
+    "Thibaud":[0,0,0,0,0,0],"Tuncay":[3,10,3,0,0,2],"Tom":[1,2,1,0,0,0],
     "Arno":[3,7,2,0,0,0],"Louis":[3,1,2,0,0,0],"Xander":[2,1,0,0,0,0],
-    "Simon":[3,0,4,0,0,1],"Tibe":[2,1,0,0,0,0],"Mats":[0,0,0,0,0,0],
+    "Simon":[3,0,5,0,0,1],"Tibe":[2,1,0,0,0,0],"Mats":[0,0,0,0,0,0],
     "Carlos":[0,0,0,0,0,0],"Darren":[0,0,0,0,0,0],"Naam nog in te vullen":[0,0,0,0,0,0]
   };
   const makeTable=(data,note="")=>{
     const initial = name => esc(String(name || "?").trim().charAt(0).toUpperCase());
-    const card = (r,i,value,label,kind) => `
+    const card = (r,i,value) => `
       <article class="stat-card ${i===0 ? "is-first" : ""}">
         <div class="stat-rank">${i+1}</div>
         <div class="stat-photo"><span>${initial(r[0])}</span></div>
-        <div class="stat-player">
-          <div class="stat-club">UNITED BOYS</div>
-          <div class="stat-name">${esc(r[0])}</div>
-        </div>
+        <div class="stat-player"><div class="stat-club">UNITED BOYS</div><div class="stat-name">${esc(r[0])}</div></div>
         <div class="stat-value">${esc(value)}</div>
       </article>`;
-    const topGoals = [...data].sort((a,b)=>Number(b[2])-Number(a[2]) || Number(b[3])-Number(a[3]) || a[0].localeCompare(b[0]));
-    const topAssists = [...data].sort((a,b)=>Number(b[3])-Number(a[3]) || Number(b[2])-Number(a[2]) || a[0].localeCompare(b[0]));
-
-    let out = `
-      <div class="stats-leaderboard">
-        <div class="stats-block">
-          <div class="stats-heading">TOPSCORERS</div>
-          <div class="stats-cards">${topGoals.map((r,i)=>card(r,i,r[2],"Goals","goals")).join("")}</div>
-        </div>
-        <div class="stats-block">
-          <div class="stats-heading">ASSISTS</div>
-          <div class="stats-cards">${topAssists.map((r,i)=>card(r,i,r[3],"Assists","assists")).join("")}</div>
-        </div>
-      </div>`;
-    if(note) out += `<p class="swipe-note" style="margin-top:10px">${esc(note)}</p>`;
+    const topGoals=[...data].sort((a,b)=>Number(b[2])-Number(a[2])||Number(b[3])-Number(a[3])||a[0].localeCompare(b[0]));
+    const topAssists=[...data].sort((a,b)=>Number(b[3])-Number(a[3])||Number(b[2])-Number(a[2])||a[0].localeCompare(b[0]));
+    let out=`<div class="stats-leaderboard"><div class="stats-block"><div class="stats-heading">TOPSCORERS</div><div class="stats-cards">${topGoals.map((r,i)=>card(r,i,r[2])).join("")}</div></div><div class="stats-block"><div class="stats-heading">ASSISTS</div><div class="stats-cards">${topAssists.map((r,i)=>card(r,i,r[3])).join("")}</div></div></div>`;
+    if(note) out+=`<p class="swipe-note" style="margin-top:10px">${esc(note)}</p>`;
     return out;
   };
+  const num=v=>{const n=parseFloat(String(v??"").replace(",","."));return Number.isFinite(n)?n:0;};
+  const canonical=(raw)=>{
+    const k=norm(raw);
+    const exact=wanted.find(w=>norm(w)===k); if(exact) return exact;
+    return wanted.find(w=>k.startsWith(norm(w)+" ")) || null;
+  };
   try{
-    // Lees het tabblad "Wedstrijd per wedstrijd" en tel alle wedstrijden per speler op.
     const rows=await loadSheet("Wedstrijd per wedstrijd");
     const headerRowIndex=rows.findIndex(r=>r.some(v=>norm(v)==="speler"));
-    if(headerRowIndex<0) throw new Error("Kolomkoppen niet gevonden");
+    if(headerRowIndex<0) throw new Error("Speler-kolom niet gevonden");
     const headers=rows[headerRowIndex];
     const idx={
       player:headerIndex(headers,["Speler"]),
-      played:headerIndex(headers,["Gespeeld"]),
-      goals:headerIndex(headers,["Goals"]),
-      assists:headerIndex(headers,["Assists"]),
-      yellow:headerIndex(headers,["Geel"]),
-      red:headerIndex(headers,["Rood"]),
-      motm:headerIndex(headers,["MOTM"])
+      played:headerIndex(headers,["Gespeeld","Wedstrijden"]),
+      goals:headerIndex(headers,["Goals","Doelpunten"]),
+      assists:headerIndex(headers,["Assists","Assistenties"]),
+      yellow:headerIndex(headers,["Geel","Gele kaarten"]),
+      red:headerIndex(headers,["Rood","Rode kaarten"]),
+      motm:headerIndex(headers,["MOTM","Man of the match"])
     };
-    if(idx.player<0 || idx.played<0 || idx.goals<0 || idx.assists<0 || idx.yellow<0 || idx.red<0 || idx.motm<0){
-      throw new Error("Niet alle statistiekkolommen gevonden");
-    }
+    if(idx.player<0 || idx.goals<0 || idx.assists<0) throw new Error("Speler/Goals/Assists kolommen niet gevonden");
     const totals=new Map();
     rows.slice(headerRowIndex+1).forEach(r=>{
-      const rawName=String(r[idx.player]??"").trim();
-      const key=norm(rawName);
-      if(!key || !wanted.some(w=>norm(w)===key)) return;
-      if(!totals.has(key)) totals.set(key,{name:wanted.find(w=>norm(w)===key),played:0,goals:0,assists:0,yellow:0,red:0,motm:0});
-      const t=totals.get(key);
-      const num=v=>{const n=parseFloat(String(v??"").replace(",",".")); return Number.isFinite(n)?n:0;};
-      t.played += num(r[idx.played]);
+      const name=canonical(String(r[idx.player]??"").trim());
+      if(!name) return;
+      if(!totals.has(name)) totals.set(name,{played:0,goals:0,assists:0,yellow:0,red:0,motm:0});
+      const t=totals.get(name);
+      t.played += idx.played>=0 ? num(r[idx.played]) : 0;
       t.goals += num(r[idx.goals]);
       t.assists += num(r[idx.assists]);
-      t.yellow += num(r[idx.yellow]);
-      t.red += num(r[idx.red]);
-      t.motm += num(r[idx.motm]);
+      t.yellow += idx.yellow>=0 ? num(r[idx.yellow]) : 0;
+      t.red += idx.red>=0 ? num(r[idx.red]) : 0;
+      t.motm += idx.motm>=0 ? num(r[idx.motm]) : 0;
     });
     const data=wanted.map(name=>{
-      const t=totals.get(norm(name));
-      const old=fallback[name] || [0,0,0,0,0,0];
-      const played=t ? t.played : old[0];
-      const goals=t ? t.goals : old[1];
-      const assists=t ? t.assists : old[2];
-      const yellow=t ? t.yellow : old[3];
-      const red=t ? t.red : old[4];
-      const motm=t ? t.motm : old[5];
-      const gw=played ? (goals/played).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') : "0";
-      return [name,played,goals,assists,yellow,red,motm,gw];
+      const t=totals.get(name), old=fallback[name]||[0,0,0,0,0,0];
+      const played=t && t.played>0 ? t.played : old[0];
+      const goals=t ? t.goals : old[1], assists=t ? t.assists : old[2];
+      const yellow=t ? t.yellow : old[3], red=t ? t.red : old[4], motm=t ? t.motm : old[5];
+      return [name,played,goals,assists,yellow,red,motm];
     });
-    box.className="info-card";
-    box.innerHTML=makeTable(data);
+    box.className="info-card"; box.innerHTML=makeTable(data);
   }catch(e){
     console.error(e);
-    const data=wanted.map((name)=>{
-      const old=fallback[name] || [0,0,0,0,0,0];
-      const gw=old[0] ? (old[1]/old[0]).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') : "0";
-      return [name,old[0],old[1],old[2],old[3],old[4],old[5],gw];
-    });
-    box.className="info-card";
-    box.innerHTML=makeTable(data,"Live laden lukt momenteel niet; dit zijn de laatst bekende waarden.");
+    const data=wanted.map(name=>{const o=fallback[name]||[0,0,0,0,0,0];return [name,o[0],o[1],o[2],o[3],o[4],o[5]];});
+    box.className="info-card"; box.innerHTML=makeTable(data,"Live statistieken tijdelijk niet bereikbaar; de laatst bekende correcte totalen worden getoond.");
   }
 }
 async function loadLiveMatches(){
   const box=document.getElementById("live-matches");
   const homeAway=["UIT","THUIS","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","UIT","UIT","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","THUIS","THUIS"];
   const fallback=[
-    [1,"04/09/2026","de balzakskes","Gelijk","7-7","19u","Sporthal Mariakerke"],
-    [2,"11/09/2026","red star gent","Winst","12-2","22u","Sporthal Rooienbreken"],
-    [3,"14/09/2026","FC de ploegmoats","Verlies","2-5","19u","Sporthal Hogeschool"],
-    [4,"25/09/2026","Charlie shot","Winst","5-0","21u","Sporthal Mariakerke"],
-    [5,"02/10/2026","Frigo loco","Verlies","4-2","21u","Sporthal Zwijnaarde"],
-    [6,"09/10/2026","Yellow fever","","","21u","Sporthal Hogeschool"],
-    [7,"16/10/2026","The black adders","","","20u","Sporthal Zwijnaarde"],
-    [8,"29/10/2026","Mvc recubela","","","21u","Sporthal hogeschool"],
-    [9,"06/11/2026","De kioskvríenden","","","22u","Sporthal hogeschool"],
-    [10,"20/11/2026","Château des frites","","","20u","Sporthal Mariakerke"],
-    [11,"04/12/2026","Zweet club","","","20u","Sporthal Mariakerke"],
-    [12,"09/12/2026","Htd united","","","19u","Sporthal Mariakerke"],
-    [13,"18/12/2026","Pantorino fc","","","21u","Sporthal hogeschool"],
-    [14,"09/01/2027","Htd united","","","16u","Sporthal hogeschool"],
-    [15,"15/01/2027","De balzakskes","","","20u","Sporthal Mariakerke"],
-    [16,"05/02/2027","Charlie shot","","","21u","Sporthal Mariakerke"],
-    [17,"12/02/2027","Frigo loco","","","22u","Sporthal hogeschool"],
-    [18,"19/02/2027","Yellow fever","","","20u","Sporthal Mariakerke"],
-    [19,"26/02/2027","The black adders","","","21u","Sporthal Mariakerke"],
-    [20,"12/03/2027","Mvc recubela","","","21u","Sporthal Mariakerke"],
-    [21,"26/03/2027","Fc de ploegmoats","","","20u","Sporthal hogeschool"],
-    [22,"02/04/2027","Château des frites","","","20u","Sporthal hogeschool"],
-    [23,"05/04/2027","Zweet club","","","21:15 u","Sporthal Merelbeke"],
-    [24,"16/04/2027","Red star Gent","","","19 u","Sporthal hogeschool"],
-    [25,"23/04/2027","Pantorino fc","","","21u","Sporthal hogeschool"],
-    [26,"28/04/2027","De kioskvríenden","","","21u","Sporthal Zwijnaarde"]
+    [1,"04/09/2026","de balzakskes","Gelijk","7-7","19u","Sporthal Mariakerke"],[2,"11/09/2026","red star gent","Winst","12-2","22u","Sporthal Rooienbreken"],[3,"14/09/2026","FC de ploegmoats","Verlies","2-5","19u","Sporthal Hogeschool"],[4,"25/09/2026","Charlie shot","Winst","5-0","21u","Sporthal Mariakerke"],[5,"02/10/2026","Frigo loco","Verlies","4-2","21u","Sporthal Zwijnaarde"],[6,"09/10/2026","Yellow fever","","","21u","Sporthal Hogeschool"],[7,"16/10/2026","The black adders","","","20u","Sporthal Zwijnaarde"],[8,"29/10/2026","Mvc recubela","","","21u","Sporthal hogeschool"],[9,"06/11/2026","De kioskvríenden","","","22u","Sporthal hogeschool"],[10,"20/11/2026","Château des frites","","","20u","Sporthal Mariakerke"],[11,"04/12/2026","Zweet club","","","20u","Sporthal Mariakerke"],[12,"09/12/2026","Htd united","","","19u","Sporthal Mariakerke"],[13,"18/12/2026","Pantorino fc","","","21u","Sporthal hogeschool"],[14,"09/01/2027","Htd united","","","16u","Sporthal hogeschool"],[15,"15/01/2027","De balzakskes","","","20u","Sporthal Mariakerke"],[16,"05/02/2027","Charlie shot","","","21u","Sporthal Mariakerke"],[17,"12/02/2027","Frigo loco","","","22u","Sporthal hogeschool"],[18,"19/02/2027","Yellow fever","","","20u","Sporthal Mariakerke"],[19,"26/02/2027","The black adders","","","21u","Sporthal Mariakerke"],[20,"12/03/2027","Mvc recubela","","","21u","Sporthal Mariakerke"],[21,"26/03/2027","Fc de ploegmoats","","","20u","Sporthal hogeschool"],[22,"02/04/2027","Château des frites","","","20u","Sporthal hogeschool"],[23,"05/04/2027","Zweet club","","","21:15 u","Sporthal Merelbeke"],[24,"16/04/2027","Red star Gent","","","19 u","Sporthal hogeschool"],[25,"23/04/2027","Pantorino fc","","","21u","Sporthal hogeschool"],[26,"28/04/2027","De kioskvríenden","","","21u","Sporthal Zwijnaarde"]
   ];
   const render=(matches)=>{
-    const today=new Date();
-    const normalized=matches.map((m,i)=>({m,num:Number(m[0])||i+1,date:m[1]||"",opp:m[2]||"",result:m[3]||"",score:m[4]||"",time:m[5]||"",location:m[6]||"",homeAway:homeAway[(Number(m[0])||i+1)-1]||""}));
-    normalized.sort((a,b)=>a.num-b.num);
-    let nextFound=false;
-    let html="";
+    const normalized=matches.map((m,i)=>({num:Number(m[0])||i+1,date:m[1]||"",opp:m[2]||"",result:m[3]||"",score:m[4]||"",time:m[5]||"",location:m[6]||"",homeAway:homeAway[(Number(m[0])||i+1)-1]||""}));
+    normalized.sort((a,b)=>a.num-b.num); let nextFound=false; let html="";
     normalized.forEach(x=>{
-      const isPlayed=!!x.score;
-      let resultHtml = '';
+      const isPlayed=!!String(x.score).trim(); let resultHtml='';
       if(isPlayed){
-        const m=String(x.score).match(/(\d+)\s*[-:]\s*(\d+)/);
-        let letter='G', cls='result-draw';
-        if(m){
-          const a=Number(m[1]), b=Number(m[2]);
-          const isHome=String(x.homeAway).toUpperCase().includes('THUIS');
-          const isAway=String(x.homeAway).toUpperCase().includes('UIT');
-          const won=(isHome && a>b) || (isAway && b>a);
-          const lost=(isHome && a<b) || (isAway && b<a);
-          if(won){ letter='W'; cls='result-win'; }
-          else if(lost){ letter='V'; cls='result-loss'; }
-        }
-        const displayScore = isAway ? `${b}-${a}` : `${a}-${b}`;
+        const mm=String(x.score).match(/(\d+)\s*[-:]\s*(\d+)/); let letter='G',cls='result-draw',displayScore=x.score;
+        if(mm){const a=Number(mm[1]),b=Number(mm[2]),away=x.homeAway.toUpperCase().includes('UIT'); const gf=away?b:a,ga=away?a:b; displayScore=away?`${b}-${a}`:`${a}-${b}`; if(gf>ga){letter='W';cls='result-win'}else if(gf<ga){letter='V';cls='result-loss'}}
         resultHtml=`<div class="match-result"><span class="result-letter ${cls}">${letter}</span><span class="badge">${esc(displayScore)}</span></div>`;
-      }else{
-        const badge=!nextFound ? "VOLGENDE" : "VOLGEND";
-        if(!nextFound) nextFound=true;
-        resultHtml=`<span class="badge">${badge}</span>`;
-      }
+      }else{const badge=!nextFound?'VOLGENDE':'VOLGEND';if(!nextFound)nextFound=true;resultHtml=`<span class="badge">${badge}</span>`;}
       html+=`<div class="match"><div><div class="date">${esc(x.date)} • ${esc(x.time)}</div><div class="opp">${esc(x.opp)}</div><small>${esc(x.location)} • ${esc(x.homeAway)}</small></div>${resultHtml}</div>`;
     });
-    box.className="matches-list";
-    box.innerHTML=html;
+    box.className="matches-list"; box.innerHTML=html;
   };
   try{
     const rows=await loadSheet("Wedstrijdresultaten");
-    const headerRowIndex=rows.findIndex(r=>{
-      const h=r.map(norm);
-      return h.includes("datum") && h.includes("tegenstander") && h.includes("score");
-    });
-    if(headerRowIndex<0) throw new Error("Wedstrijdresultaten-koppen niet gevonden");
-    const headers=rows[headerRowIndex];
-    const idx={
-      num:headerIndex(headers,["#"]), date:headerIndex(headers,["Datum"]), opp:headerIndex(headers,["Tegenstander"]),
-      result:headerIndex(headers,["Uitslag"]), score:headerIndex(headers,["Score"]), time:headerIndex(headers,["Uur"]), location:headerIndex(headers,["Opmerking"])
-    };
-    if(idx.date<0 || idx.opp<0 || idx.score<0 || idx.time<0 || idx.location<0) throw new Error("Wedstrijden-kolommen niet gevonden");
-    const data=rows.slice(headerRowIndex+1).map((r,i)=>[
-      idx.num>=0 && r[idx.num] ? r[idx.num] : String(i+1), r[idx.date]||"", r[idx.opp]||"", idx.result>=0?r[idx.result]||"":"", r[idx.score]||"", r[idx.time]||"", r[idx.location]||""
-    ]).filter(r=>r[1]&&r[2]);
-    if(data.length<1) throw new Error("Geen wedstrijden gevonden");
-    // Google Sheets kan de gepubliceerde CSV tijdelijk nog zonder de nieuwste score leveren.
-    // Gebruik dan de bekende lokale wedstrijddata als tijdelijke aanvulling; zodra Sheets de score publiceert, neemt die live waarde weer over.
-    const knownScores = {
-      "04/09/2026|de balzakskes":"7-7",
-      "11/09/2026|red star gent":"12-2",
-      "14/09/2026|fc de ploegmoats":"2-5",
-      "25/09/2026|charlie shot":"5-0",
-      "02/10/2026|frigo loco":"4-2"
-    };
-    data.forEach(r=>{
-      if(!String(r[4]).trim()){
-        const key=norm(r[1])+"|"+norm(r[2]);
-        if(knownScores[key]) r[4]=knownScores[key];
-      }
-    });
-    render(data);
-  }catch(e){
-    console.error(e);
-    render(fallback);
-  }
+    const hi=rows.findIndex(r=>{const h=r.map(norm);return h.includes("datum")&&h.includes("tegenstander")&&h.includes("score")});
+    if(hi<0) throw new Error("Wedstrijdresultaten-koppen niet gevonden");
+    const h=rows[hi], idx={num:headerIndex(h,["#"]),date:headerIndex(h,["Datum"]),opp:headerIndex(h,["Tegenstander"]),result:headerIndex(h,["Uitslag","Resultaat"]),score:headerIndex(h,["Score"]),time:headerIndex(h,["Uur","Tijd"]),location:headerIndex(h,["Opmerking","Locatie","Sporthal"])};
+    if(idx.date<0||idx.opp<0||idx.score<0) throw new Error("Basis wedstrijdkolommen ontbreken");
+    const live=rows.slice(hi+1).map((r,i)=>[idx.num>=0&&r[idx.num]?r[idx.num]:String(i+1),r[idx.date]||"",r[idx.opp]||"",idx.result>=0?r[idx.result]||"":"",r[idx.score]||"",idx.time>=0?r[idx.time]||"":"",idx.location>=0?r[idx.location]||"":""]).filter(r=>r[1]&&r[2]);
+    const merged=[...fallback];
+    const key=(d,o)=>norm(d)+"|"+norm(o);
+    live.forEach(r=>{const i=merged.findIndex(x=>key(x[1],x[2])===key(r[1],r[2]));if(i>=0){if(r[0])merged[i][0]=r[0];if(r[3])merged[i][3]=r[3];if(r[4])merged[i][4]=r[4];if(r[5])merged[i][5]=r[5];if(r[6])merged[i][6]=r[6];}else merged.push(r);});
+    render(merged);
+  }catch(e){console.error(e);render(fallback);}
 }
 async function loadLiveNews(){
   const box=document.getElementById("live-news");
@@ -1225,7 +1132,7 @@ async function loadHomeDashboard(){
     [5,"02/10/2026","Frigo loco","Verlies","4-2","21u","Sporthal Zwijnaarde"]
   ];
   // Alleen noodwaarden als Google Sheets tijdelijk niet bereikbaar is. Live Sheet-data krijgt voorrang.
-  const fallbackStats=[['Tuncay',9,3],['Arno',7,2],['Simon',0,4],['Tom',2,1]];
+  const fallbackStats=[['Tuncay',10,3],['Arno',7,2],['Simon',0,5],['Tom',2,1]];
   const render=(matches,stats)=>{
     const played=matches.filter(m=>m[4]);
     let wins=0,draws=0,losses=0,forGoals=0,againstGoals=0;
@@ -1330,21 +1237,19 @@ function updateCountdownTarget(m){
   countdownTimer=setInterval(tick,1000);
 }
 async function loadHomeCountdown(){
+  const fallback=[
+    [1,"04/09/2026","de balzakskes","7-7","19u","Sporthal Mariakerke"],[2,"11/09/2026","red star gent","12-2","22u","Sporthal Rooienbreken"],[3,"14/09/2026","FC de ploegmoats","2-5","19u","Sporthal Hogeschool"],[4,"25/09/2026","Charlie shot","5-0","21u","Sporthal Mariakerke"],[5,"02/10/2026","Frigo loco","4-2","21u","Sporthal Zwijnaarde"],[6,"09/10/2026","Yellow fever","","21u","Sporthal Hogeschool"],[7,"16/10/2026","The black adders","","20u","Sporthal Zwijnaarde"],[8,"29/10/2026","Mvc recubela","","21u","Sporthal hogeschool"],[9,"06/11/2026","De kioskvríenden","","22u","Sporthal hogeschool"],[10,"20/11/2026","Château des frites","","20u","Sporthal Mariakerke"],[11,"04/12/2026","Zweet club","","20u","Sporthal Mariakerke"],[12,"09/12/2026","Htd united","","19u","Sporthal Mariakerke"],[13,"18/12/2026","Pantorino fc","","21u","Sporthal hogeschool"],[14,"09/01/2027","Htd united","","16u","Sporthal hogeschool"],[15,"15/01/2027","De balzakskes","","20u","Sporthal Mariakerke"],[16,"05/02/2027","Charlie shot","","21u","Sporthal Mariakerke"],[17,"12/02/2027","Frigo loco","","22u","Sporthal hogeschool"],[18,"19/02/2027","Yellow fever","","20u","Sporthal Mariakerke"],[19,"26/02/2027","The black adders","","21u","Sporthal Mariakerke"],[20,"12/03/2027","Mvc recubela","","21u","Sporthal Mariakerke"],[21,"26/03/2027","Fc de ploegmoats","","20u","Sporthal hogeschool"],[22,"02/04/2027","Château des frites","","20u","Sporthal hogeschool"],[23,"05/04/2027","Zweet club","","21:15 u","Sporthal Merelbeke"],[24,"16/04/2027","Red star Gent","","19 u","Sporthal hogeschool"],[25,"23/04/2027","Pantorino fc","","21u","Sporthal hogeschool"],[26,"28/04/2027","De kioskvríenden","","21u","Sporthal Zwijnaarde"]
+  ];
   try{
-    const rows=await loadSheet('Wedstrijdresultaten');
-    const headerRowIndex=rows.findIndex(r=>{const h=r.map(norm);return h.includes('datum')&&h.includes('tegenstander')&&h.includes('score')&&h.includes('uur')});
-    if(headerRowIndex<0) throw new Error('Geen wedstrijdkoppen');
-    const headers=rows[headerRowIndex];
-    const idx={num:headerIndex(headers,['#']),date:headerIndex(headers,['Datum']),opp:headerIndex(headers,['Tegenstander']),score:headerIndex(headers,['Score']),time:headerIndex(headers,['Uur']),location:headerIndex(headers,['Opmerking'])};
-    const data=rows.slice(headerRowIndex+1).map((r,i)=>[idx.num>=0?r[idx.num]||String(i+1):String(i+1),r[idx.date]||'',r[idx.opp]||'',idx.score>=0?r[idx.score]||'':'', '',idx.time>=0?r[idx.time]||'':'',idx.location>=0?r[idx.location]||'':'']).filter(r=>r[1]&&r[2]);
-    const now=Date.now();
-    const next=data.find(m=>{const d=parseMatchDate(m[1],m[5]);return d&&d.getTime()>now&&!m[3]});
-    if(next) updateCountdownTarget(next);
-  }catch(e){
-    updateCountdownTarget([5,'02/10/2026','Frigo Loco','','','21u','Sporthal Zwijnaarde']);
-  }
+    const rows=await loadSheet('Wedstrijdresultaten'); const hi=rows.findIndex(r=>{const h=r.map(norm);return h.includes('datum')&&h.includes('tegenstander')&&h.includes('score')});
+    if(hi>=0){const h=rows[hi],idx={date:headerIndex(h,['Datum']),opp:headerIndex(h,['Tegenstander']),score:headerIndex(h,['Score']),time:headerIndex(h,['Uur','Tijd']),location:headerIndex(h,['Opmerking','Locatie','Sporthal'])};
+      rows.slice(hi+1).forEach((r,i)=>{const d=r[idx.date]||'',o=r[idx.opp]||'';const j=fallback.findIndex(x=>norm(x[1])===norm(d)&&norm(x[2])===norm(o));if(j>=0){if(idx.score>=0&&r[idx.score])fallback[j][3]=r[idx.score];if(idx.time>=0&&r[idx.time])fallback[j][4]=r[idx.time];if(idx.location>=0&&r[idx.location])fallback[j][5]=r[idx.location];}});
+    }
+  }catch(e){console.error(e);}
+  const now=Date.now();
+  const next=fallback.find(m=>{const d=parseMatchDate(m[1],m[4]);return d && d.getTime()>now && !String(m[3]).trim();});
+  if(next) updateCountdownTarget([next[0],next[1],next[2],next[3],'',next[4],next[5]]);
 }
-
 
 function initSponsorTicker(){
   const track=document.getElementById('sponsorTickerTrack');
