@@ -764,6 +764,75 @@ img[alt="Thibaud Dujardin"]{
   transform:translateX(-50%) !important;
 }
 </style>
+
+<style id="ub-all-premium-detail">
+/* All player detail pages use the same premium United Boys look as Thibaud. */
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo){
+  min-height:620px !important;
+  padding:82px 28px 0 !important;
+  overflow:hidden !important;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(38,125,255,.30), transparent 27%),
+    radial-gradient(circle at 16% 78%, rgba(0,92,210,.20), transparent 34%),
+    linear-gradient(145deg,#02152e 0%,#06356c 54%,#0756a6 100%) !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo):before{
+  content:"" !important;
+  display:block !important;
+  position:absolute !important; inset:0 !important; opacity:.20 !important;
+  background:
+    linear-gradient(90deg,transparent 49.4%,rgba(255,255,255,.14) 50%,transparent 50.6%),
+    linear-gradient(0deg,transparent 49.4%,rgba(255,255,255,.12) 50%,transparent 50.6%) !important;
+  background-size:170px 170px !important;
+  pointer-events:none !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo):after{
+  content:"" !important; position:absolute !important; z-index:0 !important;
+  width:430px !important; height:430px !important; border-radius:50% !important;
+  right:-145px !important; top:95px !important;
+  border:34px solid rgba(255,255,255,.075) !important;
+  box-shadow:inset 0 0 0 18px rgba(255,255,255,.025) !important;
+  background:radial-gradient(circle,rgba(255,255,255,.045) 0 12%,transparent 13% 22%,rgba(255,255,255,.035) 23% 24%,transparent 25%) !important;
+  pointer-events:none !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-big-number{
+  z-index:1 !important; color:rgba(255,255,255,.08) !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-number,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-line,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-position{
+  z-index:4 !important; text-shadow:0 3px 16px rgba(0,0,0,.32) !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo{
+  z-index:2 !important; left:30% !important; width:74% !important;
+  inset-top:0 !important; height:100% !important;
+  align-items:flex-end !important; justify-content:flex-end !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo:before{
+  display:none !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo img{
+  width:100% !important; height:100% !important;
+  object-fit:contain !important; object-position:right bottom !important;
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.24)) !important;
+}
+@media(max-width:480px){
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo){
+    min-height:555px !important; height:555px !important; padding:72px 20px 0 !important;
+  }
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo{
+    left:25% !important; width:79% !important;
+  }
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title{
+    max-width:58% !important; margin-top:58px !important;
+  }
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-first{font-size:23px !important;}
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-last{font-size:36px !important;}
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-big-number{font-size:190px !important; top:108px !important;}
+}
+</style>
+
 </head>
 <body>
 
@@ -1697,6 +1766,7 @@ initSponsorTicker();
   function openPlayer(name, article){
     const p = data[name] || {};
     const hero = document.querySelector('.ub-player-hero');
+    hero.classList.add('premium-detail');
     hero.classList.toggle('thibaud-exact-photo', name === 'Thibaud');
     const parts = (p.full || name).trim().split(/\s+/);
     const first = parts.shift() || name;
@@ -1744,7 +1814,7 @@ initSponsorTicker();
     loadPlayerLiveStats(name);
   }
   function closePlayer(){
-    document.querySelector('.ub-player-hero')?.classList.remove('thibaud-exact-photo');
+    document.querySelector('.ub-player-hero')?.classList.remove('thibaud-exact-photo','premium-detail');
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden','true');
     document.body.style.overflow='';
