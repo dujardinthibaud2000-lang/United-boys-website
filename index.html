@@ -1727,5 +1727,17 @@ initSponsorTicker();
   });
 })();
 </script>
+
+<style id="ub-final-detail-photo-fix">
+/* Detailvenster: volledig los van de spelerskaart en exact als het goedgekeurde ontwerp. */
+.ub-player-hero{position:relative!important;overflow:hidden!important;}
+.ub-player-hero:before{z-index:0!important;}
+.ub-player-big-number{z-index:2!important;}
+.ub-player-title{z-index:3!important;}
+.ub-player-number,.ub-player-line,.ub-player-position{z-index:3!important;}
+.ub-player-photo{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;z-index:1!important;display:block!important;overflow:hidden!important;pointer-events:none!important;}
+.ub-player-photo:before{display:none!important;}
+.ub-player-photo img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;z-index:1!important;}
+</style>
 </body>
 </html>
