@@ -729,18 +729,19 @@ body{background:#020b16;color:#fff}
 
 <style id="ub-thibaud-photo-fix">
 /* Thibaud: show the complete original photo inside the player card. */
-#spelers .player-photo img[alt="Thibaud Dujardin"]{
+img[alt="Thibaud Dujardin"]{
   position:absolute!important;
   inset:0!important;
   width:100%!important;
   height:100%!important;
   object-fit:contain!important;
   object-position:center bottom!important;
-  z-index:1!important;
+  z-index:3!important;
   max-width:none!important;
   max-height:none!important;
+  display:block!important;
 }
-#spelers .player-photo:after{pointer-events:none!important;z-index:2!important;}
+#spelers .player-photo:after{pointer-events:none!important;z-index:4!important;opacity:0!important;}
 </style>
 </head>
 <body>
