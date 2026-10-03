@@ -1663,6 +1663,27 @@ initSponsorTicker();
 }
 </style>
 
+<style id="ub-own-number-overlay">
+/* Non-Thibaud profiles: hide the baked #7 area from the supplied poster and show the current player's own large number. */
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo)::before{
+  content:"" !important; display:block !important; position:absolute !important;
+  left:0 !important; top:55px !important; width:52% !important; height:62% !important;
+  z-index:2 !important; pointer-events:none !important;
+  background:
+    radial-gradient(ellipse at 38% 34%, rgba(10,91,181,1) 0%, rgba(7,59,119,1) 34%, rgba(4,31,62,1) 62%, rgba(2,14,29,.99) 82%, rgba(2,14,29,0) 100%),
+    linear-gradient(145deg, rgba(3,18,38,.98), rgba(5,42,82,.98)) !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-big-number{
+  z-index:3 !important; color:rgba(255,255,255,.12) !important;
+  text-shadow:0 2px 8px rgba(0,0,0,.12) !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-number,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-line,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-position,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo{z-index:4 !important;}
+</style>
+
 <div id="ubPlayerOverlay" class="ub-player-overlay" aria-hidden="true">
   <div class="ub-player-card">
     <button class="ub-player-close" type="button" aria-label="Sluiten">×</button>
