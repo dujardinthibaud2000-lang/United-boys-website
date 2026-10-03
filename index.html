@@ -1119,24 +1119,37 @@ async function loadLiveNews(){
   try{
     const rows=await loadSheet("Nieuws");
     const headerRowIndex=rows.findIndex(r=>{
-      const h=r.map(norm);
-      return h.includes("datum") && h.includes("titel") && h.includes("tekst");
+      const h=r.map(norm).map(v=>v.replace(/[^a-z0-9]/g,''));
+      return h.includes("datum") && h.includes("titel") && (h.includes("tekst") || h.includes("bericht") || h.includes("beschrijving") || h.includes("inhoud") || h.includes("omschrijving") || h.includes("content"));
     });
     if(headerRowIndex<0) throw new Error("Nieuws-koppen niet gevonden");
     const headers=rows[headerRowIndex];
     const idx={
-      date:headerIndex(headers,["Datum"]), title:headerIndex(headers,["Titel"]), text:headerIndex(headers,["Tekst"]), photo:headerIndex(headers,["Foto"])
+      date:headerIndex(headers,["Datum","Date"]),
+      title:headerIndex(headers,["Titel","Title","Kop","Headline"]),
+      text:headerIndex(headers,["Tekst","Bericht","Beschrijving","Inhoud","Omschrijving","Content","Body"]),
+      photo:headerIndex(headers,["Foto","Afbeelding","Image","Foto URL","Afbeelding URL"])
     };
     if(idx.date<0 || idx.title<0 || idx.text<0) throw new Error("Nieuws-kolommen niet gevonden");
     const data=rows.slice(headerRowIndex+1).map(r=>[
-      r[idx.date]||"",r[idx.title]||"",r[idx.text]||"",idx.photo>=0?(r[idx.photo]||""):""
+      String(r[idx.date]||"").trim(),
+      String(r[idx.title]||"").trim(),
+      String(r[idx.text]||"").trim(),
+      idx.photo>=0 ? String(r[idx.photo]||"").trim() : ""
     ]).filter(r=>r[1]||r[2]);
+    if(!data.length) throw new Error("Geen nieuws gevonden in Google Sheets");
     data.reverse();
     render(data);
   }catch(e){
-    console.error(e);
+    console.error("United Boys nieuws:",e);
     render(fallback);
   }
+}
+
+// Nieuws opnieuw ophalen zodat een nieuw bericht in Google Sheets automatisch verschijnt
+// zonder dat de bezoeker de website eerst volledig moet herladen.
+if(!window.__ubNewsRefresh){
+  window.__ubNewsRefresh=setInterval(()=>loadLiveNews(), 120000);
 }
 
 async function loadHomeDashboard(){
