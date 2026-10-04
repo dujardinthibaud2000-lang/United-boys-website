@@ -923,6 +923,99 @@ img[alt="Thibaud Dujardin"]{
 .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-line,
 .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-position{z-index:4 !important;}
 </style>
+
+<style id="ub-arno-style-final">
+/* UNITED BOYS — ARNO TEMPLATE FOR ALL PLAYERS EXCEPT THIBAUD */
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo){
+  min-height:620px !important;
+  height:620px !important;
+  padding:82px 28px 0 !important;
+  overflow:hidden !important;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(0,132,255,.34) 0 10%, transparent 30%),
+    radial-gradient(circle at 15% 78%, rgba(0,91,230,.34) 0 8%, transparent 34%),
+    linear-gradient(128deg, transparent 0 11%, rgba(17,120,255,.22) 11.5% 17%, transparent 17.5% 26%, rgba(12,91,220,.18) 26.5% 31%, transparent 31.5%),
+    linear-gradient(151deg, #010b20 0%, #021b3f 38%, #063d82 67%, #02132f 100%) !important;
+  background-size:auto,auto,auto,auto !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo)::before{
+  content:"" !important;
+  display:block !important;
+  position:absolute !important;
+  inset:0 !important;
+  opacity:.72 !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at 9% 10%, rgba(255,255,255,.78) 0 1px, transparent 1.7px) 0 0/13px 13px,
+    repeating-linear-gradient(132deg, transparent 0 28px, rgba(18,128,255,.22) 29px 34px, transparent 35px 58px),
+    repeating-linear-gradient(155deg, transparent 0 74px, rgba(0,103,240,.20) 75px 92px, transparent 93px 128px),
+    linear-gradient(115deg, transparent 0 33%, rgba(255,255,255,.08) 34% 35%, transparent 36% 63%, rgba(255,255,255,.06) 64% 65%, transparent 66%);
+  mix-blend-mode:screen;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo)::after{
+  content:"" !important;
+  position:absolute !important;
+  z-index:0 !important;
+  width:520px !important;
+  height:520px !important;
+  right:-210px !important;
+  top:72px !important;
+  border-radius:50% !important;
+  border:42px solid rgba(35,137,255,.18) !important;
+  box-shadow:inset 0 0 0 20px rgba(255,255,255,.025), 0 0 70px rgba(0,112,255,.14) !important;
+  background:radial-gradient(circle, transparent 0 35%, rgba(20,119,255,.06) 36% 48%, transparent 49% 100%) !important;
+  pointer-events:none !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-big-number{
+  z-index:2 !important;
+  left:20px !important;
+  top:92px !important;
+  font-size:250px !important;
+  line-height:.82 !important;
+  letter-spacing:-20px !important;
+  color:rgba(50,145,255,.16) !important;
+  text-shadow:0 2px 12px rgba(0,0,0,.2) !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-number,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-line,
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-position{
+  z-index:4 !important;
+  text-shadow:0 3px 16px rgba(0,0,0,.38) !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title{
+  margin-top:70px !important;
+  max-width:54% !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-first{font-size:28px !important;}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-last{font-size:43px !important;}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo{
+  z-index:3 !important;
+  left:30% !important;
+  width:74% !important;
+  height:100% !important;
+  inset-top:0 !important;
+  align-items:flex-end !important;
+  justify-content:flex-end !important;
+}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo::before{display:none !important;}
+.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  object-position:right bottom !important;
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.30)) !important;
+}
+@media(max-width:480px){
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo){min-height:555px !important;height:555px !important;padding:72px 20px 0 !important;}
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo{left:25% !important;width:79% !important;}
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title{max-width:58% !important;margin-top:58px !important;}
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-first{font-size:23px !important;}
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-last{font-size:36px !important;}
+  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-big-number{font-size:190px !important;top:108px !important;}
+}
+</style>
+
 </head>
 <body>
 
@@ -1974,183 +2067,5 @@ initSponsorTicker();
   });
 })();
 </script>
-
-<style id="ub-arno-template-final">
-/* UNITED BOYS — FINAL PLAYER TEMPLATE
-   Thibaud remains completely untouched. All other players use the approved Arno-style composition. */
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo){
-  min-height:523px !important;
-  height:523px !important;
-  box-sizing:border-box !important;
-  padding:0 !important;
-  overflow:hidden !important;
-  position:relative !important;
-  isolation:isolate !important;
-  background:
-    radial-gradient(ellipse at 76% 18%, rgba(34,132,255,.72) 0%, rgba(34,132,255,.18) 22%, transparent 44%),
-    radial-gradient(ellipse at 14% 78%, rgba(17,111,245,.46) 0%, transparent 38%),
-    linear-gradient(132deg, #020b1c 0%, #062b63 30%, #0756bd 55%, #031c45 79%, #010817 100%) !important;
-  border:0 !important;
-  border-radius:0 !important;
-}
-/* Electric-blue diagonal brushwork / grunge impression */
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo)::before{
-  content:"" !important;
-  display:block !important;
-  position:absolute !important;
-  inset:-18% -12% !important;
-  z-index:0 !important;
-  opacity:1 !important;
-  pointer-events:none !important;
-  background:
-    repeating-linear-gradient(125deg,
-      transparent 0 38px,
-      rgba(35,126,255,.16) 39px 52px,
-      transparent 53px 83px),
-    linear-gradient(125deg,
-      transparent 0 18%,
-      rgba(76,157,255,.28) 19% 24%,
-      transparent 25% 35%,
-      rgba(0,72,180,.55) 36% 43%,
-      transparent 44% 100%),
-    radial-gradient(circle at 24% 22%, rgba(255,255,255,.22) 0 1px, transparent 2px);
-  background-size:auto, auto, 13px 13px !important;
-  mix-blend-mode:screen !important;
-}
-/* Fine stadium texture and dark edges */
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo)::after{
-  content:"" !important;
-  position:absolute !important;
-  inset:0 !important;
-  z-index:0 !important;
-  pointer-events:none !important;
-  background:
-    radial-gradient(circle at 8% 13%, rgba(255,255,255,.7) 0 1px, transparent 2px) 0 0/13px 13px,
-    linear-gradient(90deg, rgba(0,0,0,.32), transparent 28%, transparent 72%, rgba(0,0,0,.28)),
-    linear-gradient(180deg, rgba(0,0,0,.08), transparent 40%, rgba(0,0,0,.30));
-  opacity:.55 !important;
-}
-/* Large player number: same visual role as Arno */
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-big-number{
-  z-index:1 !important;
-  position:absolute !important;
-  left:88px !important;
-  top:24px !important;
-  font-size:250px !important;
-  line-height:.9 !important;
-  font-weight:900 !important;
-  letter-spacing:-.08em !important;
-  color:rgba(8,22,56,.70) !important;
-  -webkit-text-stroke:2px rgba(52,143,255,.38) !important;
-  text-shadow:0 0 28px rgba(25,117,255,.16) !important;
-  pointer-events:none !important;
-}
-/* Text stays left and clean */
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title{
-  z-index:5 !important;
-  position:absolute !important;
-  left:58px !important;
-  top:205px !important;
-  margin:0 !important;
-  max-width:50% !important;
-  text-align:left !important;
-}
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-first{
-  display:block !important;
-  font-size:24px !important;
-  line-height:1.05 !important;
-  font-weight:800 !important;
-  letter-spacing:1.5px !important;
-  color:#fff !important;
-}
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-last{
-  display:block !important;
-  margin-top:3px !important;
-  font-size:40px !important;
-  line-height:.98 !important;
-  font-weight:900 !important;
-  letter-spacing:.5px !important;
-  color:#2585ff !important;
-  text-shadow:0 3px 14px rgba(0,0,0,.25) !important;
-}
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-number{
-  z-index:5 !important;
-  position:absolute !important;
-  left:58px !important;
-  top:338px !important;
-  margin:0 !important;
-  font-size:31px !important;
-  line-height:1 !important;
-  font-weight:900 !important;
-  color:#fff !important;
-}
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-line{
-  z-index:5 !important;
-  position:absolute !important;
-  left:58px !important;
-  top:390px !important;
-  width:58% !important;
-  height:5px !important;
-  margin:0 !important;
-  border-radius:999px !important;
-  background:#2185ff !important;
-  box-shadow:0 0 10px rgba(33,133,255,.3) !important;
-}
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-position{
-  z-index:5 !important;
-  position:absolute !important;
-  left:58px !important;
-  top:425px !important;
-  margin:0 !important;
-  font-size:19px !important;
-  line-height:1 !important;
-  font-weight:900 !important;
-  letter-spacing:.5px !important;
-  color:#fff !important;
-}
-/* Player photo: right side, large and clean, matching Arno */
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo{
-  z-index:4 !important;
-  position:absolute !important;
-  left:47% !important;
-  right:0 !important;
-  bottom:0 !important;
-  top:0 !important;
-  width:auto !important;
-  height:100% !important;
-  margin:0 !important;
-  display:flex !important;
-  align-items:flex-end !important;
-  justify-content:flex-end !important;
-  pointer-events:none !important;
-}
-.ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo img{
-  position:absolute !important;
-  right:-3% !important;
-  bottom:0 !important;
-  left:auto !important;
-  top:auto !important;
-  width:auto !important;
-  height:100% !important;
-  max-width:70% !important;
-  max-height:100% !important;
-  object-fit:contain !important;
-  object-position:right bottom !important;
-  transform:none !important;
-  display:block !important;
-}
-@media(max-width:480px){
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo){min-height:523px !important;height:523px !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-big-number{left:76px !important;top:28px !important;font-size:220px !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-title{left:58px !important;top:205px !important;max-width:50% !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-first{font-size:23px !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-last{font-size:36px !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-number{left:58px !important;top:338px !important;font-size:29px !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-line{left:58px !important;top:390px !important;width:58% !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-position{left:58px !important;top:425px !important;font-size:18px !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo{left:45% !important;}
-  .ub-player-hero.premium-detail:not(.thibaud-exact-photo) .ub-player-photo img{right:-4% !important;max-width:72% !important;}
-}
-</style>
 </body>
 </html>
