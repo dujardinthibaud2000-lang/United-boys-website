@@ -1578,6 +1578,24 @@ initSponsorTicker();
     height:555px !important;
   }
 }
+
+/* Xander: toon de goedgekeurde poster volledig, zonder crop of wijziging. */
+.ub-player-hero.ub-xander-exact{
+  min-height:0 !important;
+  height:auto !important;
+  aspect-ratio:944 / 1666 !important;
+}
+.ub-player-hero.ub-xander-exact .ub-player-photo img{
+  object-fit:contain !important;
+  object-position:center center !important;
+}
+@media(max-width:480px){
+  .ub-player-hero.ub-xander-exact{
+    min-height:0 !important;
+    height:auto !important;
+    aspect-ratio:944 / 1666 !important;
+  }
+}
 </style>
 
 <div id="ubPlayerOverlay" class="ub-player-overlay" aria-hidden="true">
@@ -1723,6 +1741,7 @@ initSponsorTicker();
     const hero = document.querySelector('.ub-player-hero');
     hero.classList.toggle('thibaud-exact-photo', name === 'Thibaud');
     hero.classList.toggle('ub-exact-poster', name === 'Xander' || name === 'Arno');
+    hero.classList.toggle('ub-xander-exact', name === 'Xander');
     const parts = (p.full || name).trim().split(/\s+/);
     const first = parts.shift() || name;
     const last = parts.join(" ");
