@@ -836,32 +836,22 @@ img[alt="Thibaud Dujardin"]{
   object-position:center center !important;
 }
 </style>
-<style id="ub-tuncay-only-visibility-20261016">
-/* Alleen Tuncay: behoud de originele poster op ware breedte en snij uitsluitend
-   de lege decoratieve onderrand weg. Geen vervorming, geen wijzigingen elders. */
-.ub-player-hero.ub-tuncay-exact{
-  aspect-ratio:852 / 1620 !important;
-  height:auto !important;
-  min-height:0 !important;
-  overflow:hidden !important;
+
+<style id="tuncay-poster-restored-20261016">
+/* Exclusively Tuncay: preserve the complete original poster proportions. */
+.ub-player-hero.ub-tuncay-exact.ub-exact-poster {
+  display:block !important; position:relative !important; width:100% !important;
+  height:auto !important; min-height:0 !important; max-height:none !important;
+  aspect-ratio:852 / 1846 !important; padding:0 !important; margin:0 !important; overflow:hidden !important;
 }
-.ub-player-hero.ub-tuncay-exact .ub-player-photo{
-  position:absolute !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  overflow:hidden !important;
+.ub-player-hero.ub-tuncay-exact.ub-exact-poster .ub-player-photo {
+  position:absolute !important; inset:0 !important; display:block !important;
+  width:100% !important; height:100% !important; overflow:hidden !important;
 }
-.ub-player-hero.ub-tuncay-exact .ub-player-photo img{
-  position:absolute !important;
-  top:0 !important;
-  left:0 !important;
-  width:100% !important;
-  height:auto !important;
-  max-width:none !important;
-  object-fit:unset !important;
-  object-position:top left !important;
-  transform:none !important;
+.ub-player-hero.ub-tuncay-exact.ub-exact-poster .ub-player-photo img {
+  position:absolute !important; inset:0 !important; display:block !important;
+  width:100% !important; height:100% !important; object-fit:contain !important;
+  object-position:center center !important; transform:none !important; filter:none !important;
 }
 </style>
 </head>
