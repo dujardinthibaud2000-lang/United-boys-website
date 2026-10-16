@@ -1142,11 +1142,21 @@ img[alt="Thibaud Dujardin"]{
 
 
 <script>
-const UNITED_BOYS_PUBLISHED_ID = "2PACX-1vSIl4xqCNuUlunBHLtYafADNN2HQoZqh-ncvMztb_RBAbwhM8kFWRDZG2Kf4NA-Uj0hjeezd4H7Tx9F";
-
+// Google Sheets: lees de gedeelde werkmap rechtstreeks in plaats van de oude publicatie.
+const UNITED_BOYS_SHEET_ID = "1MT-alQzYmZo535uSgV3hsln46l4jJbNHr83xo1cvvZQ";
 function csvUrl(sheet){
-  const base="https://docs.google.com/spreadsheets/d/e/" + UNITED_BOYS_PUBLISHED_ID + "/pub?output=csv";
-  return (sheet ? base + "&sheet=" + encodeURIComponent(sheet) : base) + "&cb=" + Date.now();
+  return "https://docs.google.com/spreadsheets/d/" + UNITED_BOYS_SHEET_ID +
+    "/gviz/tq?tqx=out%3Acsv&sheet=" + encodeURIComponent(sheet) + "&cb=" + Date.now();
+}
+// In sommige werkbladen staat de score tegenstander-eerst (bv. 2-6 bij Winst).
+// Respecteer het expliciet ingevulde resultaat en toon overal United Boys eerst.
+function ubScore(score, result){
+  const m=String(score||'').match(/(\d+)\s*[-:]\s*(\d+)/);
+  if(!m) return String(score||'');
+  let a=Number(m[1]),b=Number(m[2]);
+  const r=norm(result);
+  if((r.startsWith('w') && a<b) || (r.startsWith('v') && a>b)) [a,b]=[b,a];
+  return a+'-'+b;
 }
 function parseCSV(text){
   const rows=[]; let row=[], cell="", quoted=false;
@@ -1311,13 +1321,13 @@ async function loadLiveMatches(){
     [1,"04/09/2026","de balzakskes","Gelijk","7-7","19u","Sporthal Mariakerke"],[2,"11/09/2026","red star gent","Winst","12-2","22u","Sporthal Rooienbreken"],[3,"14/09/2026","FC de ploegmoats","Verlies","2-5","19u","Sporthal Hogeschool"],[4,"25/09/2026","Charlie shot","Winst","5-0","21u","Sporthal Mariakerke"],[5,"02/10/2026","Frigo loco","Verlies","2-4","21u","Sporthal Zwijnaarde"],[6,"09/10/2026","Yellow fever","","","21u","Sporthal Hogeschool"],[7,"16/10/2026","The black adders","","","20u","Sporthal Zwijnaarde"],[8,"29/10/2026","Mvc recubela","","","21u","Sporthal hogeschool"],[9,"06/11/2026","De kioskvríenden","","","22u","Sporthal hogeschool"],[10,"20/11/2026","Château des frites","","","20u","Sporthal Mariakerke"],[11,"04/12/2026","Zweet club","","","20u","Sporthal Mariakerke"],[12,"09/12/2026","Htd united","","","19u","Sporthal Mariakerke"],[13,"18/12/2026","Pantorino fc","","","21u","Sporthal hogeschool"],[14,"09/01/2027","Htd united","","","16u","Sporthal hogeschool"],[15,"15/01/2027","De balzakskes","","","20u","Sporthal Mariakerke"],[16,"05/02/2027","Charlie shot","","","21u","Sporthal Mariakerke"],[17,"12/02/2027","Frigo loco","","","22u","Sporthal hogeschool"],[18,"19/02/2027","Yellow fever","","","20u","Sporthal Mariakerke"],[19,"26/02/2027","The black adders","","","21u","Sporthal Mariakerke"],[20,"12/03/2027","Mvc recubela","","","21u","Sporthal Mariakerke"],[21,"26/03/2027","Fc de ploegmoats","","","20u","Sporthal hogeschool"],[22,"02/04/2027","Château des frites","","","20u","Sporthal hogeschool"],[23,"05/04/2027","Zweet club","","","21:15 u","Sporthal Merelbeke"],[24,"16/04/2027","Red star Gent","","","19 u","Sporthal hogeschool"],[25,"23/04/2027","Pantorino fc","","","21u","Sporthal hogeschool"],[26,"28/04/2027","De kioskvríenden","","","21u","Sporthal Zwijnaarde"]
   ];
   const render=(matches)=>{
-    const normalized=matches.map((m,i)=>({num:Number(m[0])||i+1,date:m[1]||"",opp:m[2]||"",result:m[3]||"",score:m[4]||"",time:m[5]||"",location:m[6]||"",homeAway:homeAway[(Number(m[0])||i+1)-1]||""}));
+    const normalized=matches.map((m,i)=>({num:Number(m[0])||i+1,date:m[1]||"",opp:m[2]||"",result:m[3]||"",score:ubScore(m[4],m[3]),time:m[5]||"",location:m[6]||"",homeAway:homeAway[(Number(m[0])||i+1)-1]||""}));
     normalized.sort((a,b)=>a.num-b.num); let nextFound=false; let html="";
     const now=Date.now();
     normalized.forEach(x=>{
       const matchDate=parseMatchDate(x.date,x.time);
       const isFuture=!!(matchDate && matchDate.getTime()>now);
-      const isPlayed=!!String(x.score).trim() || (!isFuture && !!matchDate); let resultHtml='';
+      const isPlayed=!!String(x.score).trim(); let resultHtml='';
       if(isPlayed){
         const mm=String(x.score).match(/(\d+)\s*[-:]\s*(\d+)/); let letter='G',cls='result-draw',displayScore=x.score;
         if(mm){const a=Number(mm[1]),b=Number(mm[2]); const gf=a,ga=b; displayScore=`${a}-${b}`; if(gf>ga){letter='W';cls='result-win'}else if(gf<ga){letter='V';cls='result-loss'}}
@@ -1334,7 +1344,7 @@ async function loadLiveMatches(){
     if(hi<0) throw new Error("Wedstrijdresultaten-koppen niet gevonden");
     const h=rows[hi], idx={num:headerIndex(h,["#"]),date:headerIndex(h,["Datum"]),opp:headerIndex(h,["Tegenstander"]),result:headerIndex(h,["Uitslag","Resultaat"]),score:headerIndex(h,["Score"]),time:headerIndex(h,["Uur","Tijd"]),location:headerIndex(h,["Opmerking","Locatie","Sporthal"])};
     if(idx.date<0||idx.opp<0||idx.score<0) throw new Error("Basis wedstrijdkolommen ontbreken");
-    const live=rows.slice(hi+1).map((r,i)=>[idx.num>=0&&r[idx.num]?r[idx.num]:String(i+1),r[idx.date]||"",r[idx.opp]||"",idx.result>=0?r[idx.result]||"":"",r[idx.score]||"",idx.time>=0?r[idx.time]||"":"",idx.location>=0?r[idx.location]||"":""]).filter(r=>r[1]&&r[2]);
+    const live=rows.slice(hi+1).map((r,i)=>[idx.num>=0&&r[idx.num]?r[idx.num]:String(i+1),r[idx.date]||"",r[idx.opp]||"",idx.result>=0?r[idx.result]||"":"",ubScore(r[idx.score],idx.result>=0?r[idx.result]:""),idx.time>=0?r[idx.time]||"":"",idx.location>=0?r[idx.location]||"":""]).filter(r=>r[1]&&r[2]);
     const merged=[...fallback];
     const key=(d,o)=>norm(d)+"|"+norm(o);
     live.forEach(r=>{const i=merged.findIndex(x=>key(x[1],x[2])===key(r[1],r[2]));if(i>=0){if(r[0])merged[i][0]=r[0];if(r[3])merged[i][3]=r[3];if(r[4])merged[i][4]=r[4];if(r[5])merged[i][5]=r[5];if(r[6])merged[i][6]=r[6];}else merged.push(r);});
@@ -1443,8 +1453,8 @@ async function loadHomeDashboard(){
     const matchRows=await loadSheet('Wedstrijdresultaten');
     const hi=matchRows.findIndex(r=>{const h=r.map(norm);return h.includes('datum')&&h.includes('tegenstander')&&h.includes('score')});
     if(hi<0) throw new Error('wedstrijdkoppen'); const h=matchRows[hi];
-    const mi={num:headerIndex(h,['#']),date:headerIndex(h,['Datum']),opp:headerIndex(h,['Tegenstander']),score:headerIndex(h,['Score']),time:headerIndex(h,['Uur']),location:headerIndex(h,['Opmerking'])};
-    const matches=matchRows.slice(hi+1).map((r,i)=>[mi.num>=0&&r[mi.num]?r[mi.num]:String(i+1),r[mi.date]||'',r[mi.opp]||'', '',r[mi.score]||'',r[mi.time]||'',r[mi.location]||'']).filter(r=>r[1]&&r[2]);
+    const mi={num:headerIndex(h,['#']),date:headerIndex(h,['Datum']),opp:headerIndex(h,['Tegenstander']),score:headerIndex(h,['Score']),result:headerIndex(h,['Uitslag','Resultaat']),time:headerIndex(h,['Uur']),location:headerIndex(h,['Opmerking'])};
+    const matches=matchRows.slice(hi+1).map((r,i)=>[mi.num>=0&&r[mi.num]?r[mi.num]:String(i+1),r[mi.date]||'',r[mi.opp]||'', '',ubScore(r[mi.score], mi.result>=0?r[mi.result]:''),r[mi.time]||'',r[mi.location]||'']).filter(r=>r[1]&&r[2]);
     let stats=[]; try{
       const rows=await loadSheet('Wedstrijd per wedstrijd'); const sh=rows.findIndex(r=>r.some(v=>norm(v)==='speler')); if(sh<0) throw 0; const hh=rows[sh];
       const ix={p:headerIndex(hh,['Speler']),g:headerIndex(hh,['Goals']),a:headerIndex(hh,['Assists'])}; const map=new Map();
@@ -1516,8 +1526,8 @@ async function loadHomeCountdown(){
   ];
   try{
     const rows=await loadSheet('Wedstrijdresultaten'); const hi=rows.findIndex(r=>{const h=r.map(norm);return h.includes('datum')&&h.includes('tegenstander')&&h.includes('score')});
-    if(hi>=0){const h=rows[hi],idx={date:headerIndex(h,['Datum']),opp:headerIndex(h,['Tegenstander']),score:headerIndex(h,['Score']),time:headerIndex(h,['Uur','Tijd']),location:headerIndex(h,['Opmerking','Locatie','Sporthal'])};
-      rows.slice(hi+1).forEach((r,i)=>{const d=r[idx.date]||'',o=r[idx.opp]||'';const j=fallback.findIndex(x=>norm(x[1])===norm(d)&&norm(x[2])===norm(o));if(j>=0){if(idx.score>=0&&r[idx.score])fallback[j][3]=r[idx.score];if(idx.time>=0&&r[idx.time])fallback[j][4]=r[idx.time];if(idx.location>=0&&r[idx.location])fallback[j][5]=r[idx.location];}});
+    if(hi>=0){const h=rows[hi],idx={date:headerIndex(h,['Datum']),opp:headerIndex(h,['Tegenstander']),score:headerIndex(h,['Score']),result:headerIndex(h,['Uitslag','Resultaat']),time:headerIndex(h,['Uur','Tijd']),location:headerIndex(h,['Opmerking','Locatie','Sporthal'])};
+      rows.slice(hi+1).forEach((r,i)=>{const d=r[idx.date]||'',o=r[idx.opp]||'';const j=fallback.findIndex(x=>norm(x[1])===norm(d)&&norm(x[2])===norm(o));if(j>=0){if(idx.score>=0&&r[idx.score])fallback[j][3]=ubScore(r[idx.score],idx.result>=0?r[idx.result]:'');if(idx.time>=0&&r[idx.time])fallback[j][4]=r[idx.time];if(idx.location>=0&&r[idx.location])fallback[j][5]=r[idx.location];}});
     }
   }catch(e){console.error(e);}
   const now=Date.now();
