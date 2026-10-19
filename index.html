@@ -97,9 +97,9 @@ a{text-decoration:none;color:inherit}
 .result-draw{background:#fff1cf;color:#a66a00}
 .badge{font-size:11px;font-weight:900;padding:7px 9px;border-radius:999px;background:#e8f3ff;color:var(--blue)}
 .stand{background:white;border-radius:18px;border:1px solid var(--line);overflow:hidden}
-.row{display:grid;grid-template-columns:34px 1fr 42px 42px;padding:12px 14px;border-bottom:1px solid var(--line);font-size:13px;align-items:center}
-.row.head{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase}
-.row:last-child{border-bottom:0}
+#live-stand .row{display:grid;grid-template-columns:34px minmax(0,1fr) 42px 42px;padding:12px 14px;border-bottom:1px solid var(--line);font-size:13px;align-items:center}
+#live-stand .row.head{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase}
+#live-stand .row:last-child{border-bottom:0}
 .footer{background:#041b35;color:white;margin-top:35px;padding:35px 18px;text-align:center}
 .footer strong{font-size:20px}
 .page{display:none}
@@ -1237,24 +1237,23 @@ async function loadLiveStand(){
       const h=r.map(clean);
       return h.includes("ploeg") && h.includes("punten") && (h.includes("wed") || h.includes("wedstrijden"));
     });
-    // Google Visualization CSV kan de eerste rij (#, Ploeg, Wed, Punten)
-    // als kolomlabels gebruiken en die rij uit de CSV weglaten.
-    // In dat geval zijn de vier kolommen nog steeds A-D, zoals in het werkblad.
-    const hasHeaders=headerRowIndex>=0;
-    const raw=hasHeaders ? rows[headerRowIndex] : [];
+    // Nooit spelersstatistieken als klassement tonen.
+    // Alleen een tabel met expliciete competitie-kolommen is geldig.
+    if(!hasHeaders) throw new Error("Tabblad Stand heeft geen herkenbare kolomkoppen (#, Ploeg, Wed, Punten)");
+    const raw=rows[headerRowIndex];
     const h=raw.map(clean);
-    const team=hasHeaders ? h.indexOf("ploeg") : 1;
-    const played=hasHeaders ? h.findIndex(v=>v==="wed"||v==="wedstrijden") : 2;
-    const points=hasHeaders ? h.indexOf("punten") : 3;
-    const rank=hasHeaders ? raw.findIndex(v=>String(v).trim()==="#" || clean(v)==="positie" || clean(v)==="plaats") : 0;
-    const dataRows=hasHeaders ? rows.slice(headerRowIndex+1) : rows;
-    const entries=dataRows.map((r,i)=>({
-      rank:rank>=0 && String(r[rank]??"").trim() ? String(r[rank]).trim() : String(i+1),
+    const team=h.indexOf("ploeg");
+    const played=h.findIndex(v=>v==="wed"||v==="wedstrijden"||v==="gespeeld");
+    const points=h.findIndex(v=>v==="punten"||v==="ptn");
+    const rank=raw.findIndex(v=>String(v).trim()==="#" || ["positie","plaats","rang"].includes(clean(v)));
+    if(team<0||played<0||points<0) throw new Error("Competitiekolommen ontbreken in tabblad Stand");
+    const entries=rows.slice(headerRowIndex+1).map((r,i)=>({
+      rank:rank>=0 && /^\\d+$/.test(String(r[rank]??"").trim()) ? String(r[rank]).trim() : String(i+1),
       team:String(r[team]??"").trim(),
       played:String(r[played]??"").trim(),
       points:String(r[points]??"").trim()
-    })).filter(r=>r.team && /^\d+$/.test(r.played) && /^\d+$/.test(r.points));
-    if(!entries.length) throw new Error("Geen geldige ploegen in tabblad Stand");
+    })).filter(r=>r.team && /^\\d+$/.test(r.played) && /^\\d+$/.test(r.points));
+    if(!entries.length) throw new Error("Geen geldige competitieploegen in tabblad Stand");
     render(entries);
   }catch(e){
     console.error("Live stand:",e);
