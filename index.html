@@ -1214,19 +1214,36 @@ async function loadLiveStand(){
     box.innerHTML=html;
   };
   try{
-    // Vraag alleen de echte A:D-kolommen van het tabblad Stand op.
-    // Geen oude ingebouwde stand tonen als Google Sheets niet bereikbaar is.
-    const rows=await loadSheet("Stand");
+    // Probeer beide publieke Google Sheets CSV-routes; wijzig geen andere tabbladen.
+    const urls=[
+      csvUrl("Stand"),
+      "https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+"/export?format=csv&sheet="+encodeURIComponent("Stand")+"&cb="+Date.now()
+    ];
+    let rows=null, lastError=null;
+    for(const url of urls){
+      try{
+        const response=await fetch(url,{cache:"no-store"});
+        if(!response.ok) throw new Error("HTTP "+response.status);
+        const csv=await response.text();
+        if(/^\s*<!doctype html|^\s*<html/i.test(csv)) throw new Error("Google geeft een aanmeldpagina terug");
+        const parsed=parseCSV(csv);
+        if(!parsed.length) throw new Error("Lege CSV");
+        rows=parsed; break;
+      }catch(err){lastError=err;}
+    }
+    if(!rows) throw lastError || new Error("CSV niet bereikbaar");
     const clean=v=>norm(v).replace(/^\ufeff/,"").replace(/[^a-z0-9]/g,"");
     const headerRowIndex=rows.findIndex(r=>{
       const h=r.map(clean);
       return h.includes("ploeg") && h.includes("punten") && (h.includes("wed") || h.includes("wedstrijden"));
     });
-    if(headerRowIndex<0) throw new Error("Kolomkoppen in tabblad Stand niet gevonden");
-    const h=rows[headerRowIndex].map(clean);
-    const team=h.indexOf("ploeg"), played=h.findIndex(v=>v==="wed"||v==="wedstrijden"), points=h.indexOf("punten"), rank=h.indexOf("#");
+    if(headerRowIndex<0) throw new Error("Kolommen Ploeg, Wed en Punten niet gevonden");
+    const raw=rows[headerRowIndex], h=raw.map(clean);
+    const team=h.indexOf("ploeg"), played=h.findIndex(v=>v==="wed"||v==="wedstrijden"), points=h.indexOf("punten");
+    // '#' wordt leeg na normaliseren: herken de originele kolomkop.
+    const rank=raw.findIndex(v=>String(v).trim()==="#" || clean(v)==="positie" || clean(v)==="plaats");
     const entries=rows.slice(headerRowIndex+1).map((r,i)=>({
-      rank:rank>=0 ? String(r[rank]??"").trim() : String(i+1),
+      rank:rank>=0 && String(r[rank]??"").trim() ? String(r[rank]).trim() : String(i+1),
       team:String(r[team]??"").trim(),
       played:String(r[played]??"").trim(),
       points:String(r[points]??"").trim()
@@ -1235,7 +1252,7 @@ async function loadLiveStand(){
     render(entries);
   }catch(e){
     console.error("Live stand:",e);
-    box.innerHTML='<div class="live-error">De actuele stand kon niet worden geladen uit Google Sheets. Controleer of het tabblad Stand toegankelijk is en vernieuw de pagina.</div>';
+    box.innerHTML='<div class="live-error">De stand kon niet worden opgehaald uit Google Sheets. Controleer bij Delen of iedereen met de link kijktoegang heeft. Technische melding: '+esc(e.message||"Onbekende fout")+'</div>';
   }
 }
 async function loadLiveStats(){
