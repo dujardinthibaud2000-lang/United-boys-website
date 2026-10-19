@@ -1239,7 +1239,7 @@ async function loadLiveStand(){
     });
     // Nooit spelersstatistieken als klassement tonen.
     // Alleen een tabel met expliciete competitie-kolommen is geldig.
-    if(!hasHeaders) throw new Error("Tabblad Stand heeft geen herkenbare kolomkoppen (#, Ploeg, Wed, Punten)");
+    if(headerRowIndex<0) throw new Error("Tabblad Stand heeft geen herkenbare kolomkoppen (Ploeg, Wed, Punten)");
     const raw=rows[headerRowIndex];
     const h=raw.map(clean);
     const team=h.indexOf("ploeg");
@@ -1248,11 +1248,11 @@ async function loadLiveStand(){
     const rank=raw.findIndex(v=>String(v).trim()==="#" || ["positie","plaats","rang"].includes(clean(v)));
     if(team<0||played<0||points<0) throw new Error("Competitiekolommen ontbreken in tabblad Stand");
     const entries=rows.slice(headerRowIndex+1).map((r,i)=>({
-      rank:rank>=0 && /^\\d+$/.test(String(r[rank]??"").trim()) ? String(r[rank]).trim() : String(i+1),
+      rank:rank>=0 && /^\d+$/.test(String(r[rank]??"").trim()) ? String(r[rank]).trim() : String(i+1),
       team:String(r[team]??"").trim(),
       played:String(r[played]??"").trim(),
       points:String(r[points]??"").trim()
-    })).filter(r=>r.team && /^\\d+$/.test(r.played) && /^\\d+$/.test(r.points));
+    })).filter(r=>r.team && /^\d+$/.test(r.played) && /^\d+$/.test(r.points));
     if(!entries.length) throw new Error("Geen geldige competitieploegen in tabblad Stand");
     render(entries);
   }catch(e){
