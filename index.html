@@ -927,6 +927,16 @@ img[alt="Thibaud Dujardin"]{
 .ub-player-hero.ub-tom-approved .ub-player-position {display:none !important;}
 .ub-player-hero.ub-tom-approved + .ub-player-info-bar {display:none !important;}
 </style>
+
+<style id="ub-louis-only-exact-fix">
+/* Alleen Louis: de goedgekeurde poster bevat zelf reeds naam, nummer en positie. */
+.ub-player-hero.ub-louis-exact{min-height:0!important;height:auto!important;aspect-ratio:2/3!important;padding:0!important;background:#000!important;}
+.ub-player-hero.ub-louis-exact:before{display:none!important;}
+.ub-player-hero.ub-louis-exact .ub-player-photo{inset:0!important;width:100%!important;height:100%!important;display:block!important;background:#000!important;}
+.ub-player-hero.ub-louis-exact .ub-player-photo:before{display:none!important;}
+.ub-player-hero.ub-louis-exact .ub-player-photo img{inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important;border:0!important;filter:none!important;transform:none!important;}
+.ub-player-hero.ub-louis-exact .ub-player-title,.ub-player-hero.ub-louis-exact .ub-player-big-number,.ub-player-hero.ub-louis-exact .ub-player-number,.ub-player-hero.ub-louis-exact .ub-player-line,.ub-player-hero.ub-louis-exact .ub-player-position{display:none!important;}
+</style>
 </head>
 <body>
 
@@ -2000,6 +2010,7 @@ initSponsorTicker();
     hero.classList.toggle('ub-xander-exact', name === 'Xander');
     hero.classList.toggle('ub-simon-exact', name === 'Simon');
     hero.classList.toggle('ub-tibe-exact', name === 'Tibe');
+    hero.classList.toggle('ub-louis-exact', name === 'Louis');
     const parts = (p.full || name).trim().split(/\s+/);
     const first = parts.shift() || name;
     const last = parts.join(" ");
