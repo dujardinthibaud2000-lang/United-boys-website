@@ -1204,41 +1204,38 @@ function headerIndex(headers, names){
 }
 async function loadLiveStand(){
   const box=document.getElementById("live-stand");
-  const fallback=[
-    ["Zweet Club",3,9],["HTD United",3,9],["Frigo Loco",3,9],["United Boys",4,7],
-    ["FC De Ploegmoats",2,6],["MVC Recubela",3,6],["The Black Adders",4,4],["Château Des Frites",3,4],
-    ["Yellow Fever",3,3],["Charlie Shot",4,3],["Red Star Ghent",4,3],["De Balzakskes",4,1],
-    ["Pantorino FC",0,0],["De Kioskvrienden",4,0]
-  ];
-  const render=(rows)=>{
+  if(!box) return;
+  const render=(entries)=>{
     let html='<div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div>';
-    rows.forEach((r,i)=>{
-      const cls=norm(r[0])===norm("United Boys")?' ub-highlight':'';
-      html+=`<div class="row${cls}"><div>${i+1}</div><div><b>${esc(r[0])}</b></div><div>${esc(r[1])}</div><div>${esc(r[2])}</div></div>`;
-    });
+    for(const r of entries){
+      const cls=norm(r.team)===norm("United Boys")?' ub-highlight':'';
+      html+=`<div class="row${cls}"><div>${esc(r.rank)}</div><div><b>${esc(r.team)}</b></div><div>${esc(r.played)}</div><div>${esc(r.points)}</div></div>`;
+    }
     box.innerHTML=html;
   };
   try{
+    // Vraag alleen de echte A:D-kolommen van het tabblad Stand op.
+    // Geen oude ingebouwde stand tonen als Google Sheets niet bereikbaar is.
     const rows=await loadSheet("Stand");
+    const clean=v=>norm(v).replace(/^\ufeff/,"").replace(/[^a-z0-9]/g,"");
     const headerRowIndex=rows.findIndex(r=>{
-      const h=r.map(norm);
-      return h.includes("ploeg") && (h.includes("punten") || h.includes("punt")) && (h.includes("wed") || h.includes("wedstrijden"));
+      const h=r.map(clean);
+      return h.includes("ploeg") && h.includes("punten") && (h.includes("wed") || h.includes("wedstrijden"));
     });
-    if(headerRowIndex<0) throw new Error("Stand-koppen niet gevonden");
-    const headers=rows[headerRowIndex];
-    const idx={
-      rank:headerIndex(headers,["#"]),
-      team:headerIndex(headers,["Ploeg"]),
-      played:headerIndex(headers,["Wed","Wedstrijden"]),
-      points:headerIndex(headers,["Punten","Punt"])
-    };
-    if(idx.team<0 || idx.played<0 || idx.points<0) throw new Error("Stand-kolommen niet gevonden");
-    const data=rows.slice(headerRowIndex+1).map(r=>[String(r[idx.team]??"").trim(),String(r[idx.played]??"").trim(),String(r[idx.points]??"").trim()]).filter(r=>r[0]);
-    if(data.length<1) throw new Error("Geen stand gevonden");
-    render(data);
+    if(headerRowIndex<0) throw new Error("Kolomkoppen in tabblad Stand niet gevonden");
+    const h=rows[headerRowIndex].map(clean);
+    const team=h.indexOf("ploeg"), played=h.findIndex(v=>v==="wed"||v==="wedstrijden"), points=h.indexOf("punten"), rank=h.indexOf("#");
+    const entries=rows.slice(headerRowIndex+1).map((r,i)=>({
+      rank:rank>=0 ? String(r[rank]??"").trim() : String(i+1),
+      team:String(r[team]??"").trim(),
+      played:String(r[played]??"").trim(),
+      points:String(r[points]??"").trim()
+    })).filter(r=>r.team && /^\d+$/.test(r.played) && /^\d+$/.test(r.points));
+    if(!entries.length) throw new Error("Geen geldige ploegen in tabblad Stand");
+    render(entries);
   }catch(e){
-    console.error(e);
-    render(fallback);
+    console.error("Live stand:",e);
+    box.innerHTML='<div class="live-error">De actuele stand kon niet worden geladen uit Google Sheets. Controleer of het tabblad Stand toegankelijk is en vernieuw de pagina.</div>';
   }
 }
 async function loadLiveStats(){
