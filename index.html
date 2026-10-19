@@ -1218,7 +1218,7 @@ async function loadLiveStand(){
       data=rows.slice(ix+1);
     }
     const ti=headers.indexOf("ploeg"), wi=headers.indexOf("wed"), pi=headers.indexOf("punten");
-    const ri=headers.findIndex(h=>h===""||h==="rang"||h==="positie"||h==="plaats");
+    const ri=headers.findIndex(h=>h===""||h==="rang"||h==="positie"||h==="plaats"||h==="#");
     const entries=data.map((r,i)=>({
       rank:ri>=0&&/^\d+$/.test(String(r[ri]??"").trim())?String(r[ri]).trim():String(i+1),
       team:String(r[ti]??"").trim(),
@@ -1232,7 +1232,7 @@ async function loadLiveStand(){
   // JSON bevat de echte kolomlabels; CSV is de reserve-optie.
   try{
     const url="https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+
-      "/gviz/tq?tqx=out%3Ajson&sheet=Stand&headers=1&cb="+Date.now();
+      "/gviz/tq?tqx=out%3Ajson&gid=1468735559&headers=0&cb="+Date.now();
     const response=await fetch(url,{cache:"no-store"});
     if(!response.ok) throw new Error("HTTP "+response.status);
     const raw=await response.text();
@@ -1245,9 +1245,9 @@ async function loadLiveStand(){
     entries=readStand(rows,cols);
   }catch(e){lastError=e;}
   if(!entries){
-    for(const url of [csvUrl("Stand"),
-      "https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+
-      "/export?format=csv&sheet=Stand&cb="+Date.now()]){
+    for(const url of [
+      "https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+"/export?format=csv&gid=1468735559&cb="+Date.now(),
+      "https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+"/gviz/tq?tqx=out%3Acsv&gid=1468735559&headers=0&cb="+Date.now()]){
       try{
         const response=await fetch(url,{cache:"no-store"});
         if(!response.ok) throw new Error("HTTP "+response.status);
