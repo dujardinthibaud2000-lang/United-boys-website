@@ -1237,12 +1237,18 @@ async function loadLiveStand(){
       const h=r.map(clean);
       return h.includes("ploeg") && h.includes("punten") && (h.includes("wed") || h.includes("wedstrijden"));
     });
-    if(headerRowIndex<0) throw new Error("Kolommen Ploeg, Wed en Punten niet gevonden");
-    const raw=rows[headerRowIndex], h=raw.map(clean);
-    const team=h.indexOf("ploeg"), played=h.findIndex(v=>v==="wed"||v==="wedstrijden"), points=h.indexOf("punten");
-    // '#' wordt leeg na normaliseren: herken de originele kolomkop.
-    const rank=raw.findIndex(v=>String(v).trim()==="#" || clean(v)==="positie" || clean(v)==="plaats");
-    const entries=rows.slice(headerRowIndex+1).map((r,i)=>({
+    // Google Visualization CSV kan de eerste rij (#, Ploeg, Wed, Punten)
+    // als kolomlabels gebruiken en die rij uit de CSV weglaten.
+    // In dat geval zijn de vier kolommen nog steeds A-D, zoals in het werkblad.
+    const hasHeaders=headerRowIndex>=0;
+    const raw=hasHeaders ? rows[headerRowIndex] : [];
+    const h=raw.map(clean);
+    const team=hasHeaders ? h.indexOf("ploeg") : 1;
+    const played=hasHeaders ? h.findIndex(v=>v==="wed"||v==="wedstrijden") : 2;
+    const points=hasHeaders ? h.indexOf("punten") : 3;
+    const rank=hasHeaders ? raw.findIndex(v=>String(v).trim()==="#" || clean(v)==="positie" || clean(v)==="plaats") : 0;
+    const dataRows=hasHeaders ? rows.slice(headerRowIndex+1) : rows;
+    const entries=dataRows.map((r,i)=>({
       rank:rank>=0 && String(r[rank]??"").trim() ? String(r[rank]).trim() : String(i+1),
       team:String(r[team]??"").trim(),
       played:String(r[played]??"").trim(),
