@@ -1205,60 +1205,70 @@ function headerIndex(headers, names){
 async function loadLiveStand(){
   const box=document.getElementById("live-stand");
   if(!box) return;
-  const render=(entries)=>{
-    let html='<div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div>';
-    for(const r of entries){
-      const cls=norm(r.team)===norm("United Boys")?' ub-highlight':'';
-      html+=`<div class="row${cls}"><div>${esc(r.rank)}</div><div><b>${esc(r.team)}</b></div><div>${esc(r.played)}</div><div>${esc(r.points)}</div></div>`;
+  const clean=v=>norm(v).replace(/^\ufeff/,"").replace(/[^a-z0-9]/g,"");
+  const validHeader=h=>h.includes("ploeg") && h.includes("wed") && h.includes("punten");
+  const readStand=(rows, columnLabels=[])=>{
+    // Google Visualization gebruikt de eerste rij vaak als kolomnamen in plaats van data.
+    // Controleer daarom zowel de kolomlabels als de echte CSV-rijen.
+    let headers=columnLabels.map(clean), data=rows;
+    if(!validHeader(headers)){
+      const ix=rows.findIndex(r=>validHeader(r.map(clean)));
+      if(ix<0) throw new Error("De bron geeft niet de kolommen Ploeg, Wed en Punten van tabblad Stand terug");
+      headers=rows[ix].map(clean);
+      data=rows.slice(ix+1);
     }
-    box.innerHTML=html;
+    const ti=headers.indexOf("ploeg"), wi=headers.indexOf("wed"), pi=headers.indexOf("punten");
+    const ri=headers.findIndex(h=>h===""||h==="rang"||h==="positie"||h==="plaats");
+    const entries=data.map((r,i)=>({
+      rank:ri>=0&&/^\d+$/.test(String(r[ri]??"").trim())?String(r[ri]).trim():String(i+1),
+      team:String(r[ti]??"").trim(),
+      played:String(r[wi]??"").trim(),
+      points:String(r[pi]??"").trim()
+    })).filter(r=>r.team&&/^\d+$/.test(r.played)&&/^\d+$/.test(r.points));
+    if(!entries.length) throw new Error("Geen competitieploegen gevonden in Stand");
+    return entries;
   };
+  let entries=null, lastError=null;
+  // JSON bevat de echte kolomlabels; CSV is de reserve-optie.
   try{
-    // Probeer beide publieke Google Sheets CSV-routes; wijzig geen andere tabbladen.
-    const urls=[
-      csvUrl("Stand"),
-      "https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+"/export?format=csv&sheet="+encodeURIComponent("Stand")+"&cb="+Date.now()
-    ];
-    let rows=null, lastError=null;
-    for(const url of urls){
+    const url="https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+
+      "/gviz/tq?tqx=out%3Ajson&sheet=Stand&headers=1&cb="+Date.now();
+    const response=await fetch(url,{cache:"no-store"});
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    const raw=await response.text();
+    const first=raw.indexOf("{");const last=raw.lastIndexOf("}");
+    if(first<0||last<first) throw new Error("Ongeldig Google Visualization-antwoord");
+    const payload=JSON.parse(raw.slice(first,last+1));
+    if(payload.status==="error") throw new Error("Google Sheets geeft een fout terug");
+    const cols=(payload.table?.cols||[]).map(c=>c.label||c.id||"");
+    const rows=(payload.table?.rows||[]).map(row=>(row.c||[]).map(c=>c?.f??c?.v??""));
+    entries=readStand(rows,cols);
+  }catch(e){lastError=e;}
+  if(!entries){
+    for(const url of [csvUrl("Stand"),
+      "https://docs.google.com/spreadsheets/d/"+UNITED_BOYS_SHEET_ID+
+      "/export?format=csv&sheet=Stand&cb="+Date.now()]){
       try{
         const response=await fetch(url,{cache:"no-store"});
         if(!response.ok) throw new Error("HTTP "+response.status);
         const csv=await response.text();
-        if(/^\s*<!doctype html|^\s*<html/i.test(csv)) throw new Error("Google geeft een aanmeldpagina terug");
-        const parsed=parseCSV(csv);
-        if(!parsed.length) throw new Error("Lege CSV");
-        rows=parsed; break;
-      }catch(err){lastError=err;}
+        if(/^\s*<!doctype html|^\s*<html/i.test(csv)) throw new Error("Google geeft HTML terug");
+        entries=readStand(parseCSV(csv));
+        break;
+      }catch(e){lastError=e;}
     }
-    if(!rows) throw lastError || new Error("CSV niet bereikbaar");
-    const clean=v=>norm(v).replace(/^\ufeff/,"").replace(/[^a-z0-9]/g,"");
-    const headerRowIndex=rows.findIndex(r=>{
-      const h=r.map(clean);
-      return h.includes("ploeg") && h.includes("punten") && (h.includes("wed") || h.includes("wedstrijden"));
-    });
-    // Nooit spelersstatistieken als klassement tonen.
-    // Alleen een tabel met expliciete competitie-kolommen is geldig.
-    if(headerRowIndex<0) throw new Error("Tabblad Stand heeft geen herkenbare kolomkoppen (Ploeg, Wed, Punten)");
-    const raw=rows[headerRowIndex];
-    const h=raw.map(clean);
-    const team=h.indexOf("ploeg");
-    const played=h.findIndex(v=>v==="wed"||v==="wedstrijden"||v==="gespeeld");
-    const points=h.findIndex(v=>v==="punten"||v==="ptn");
-    const rank=raw.findIndex(v=>String(v).trim()==="#" || ["positie","plaats","rang"].includes(clean(v)));
-    if(team<0||played<0||points<0) throw new Error("Competitiekolommen ontbreken in tabblad Stand");
-    const entries=rows.slice(headerRowIndex+1).map((r,i)=>({
-      rank:rank>=0 && /^\d+$/.test(String(r[rank]??"").trim()) ? String(r[rank]).trim() : String(i+1),
-      team:String(r[team]??"").trim(),
-      played:String(r[played]??"").trim(),
-      points:String(r[points]??"").trim()
-    })).filter(r=>r.team && /^\d+$/.test(r.played) && /^\d+$/.test(r.points));
-    if(!entries.length) throw new Error("Geen geldige competitieploegen in tabblad Stand");
-    render(entries);
-  }catch(e){
-    console.error("Live stand:",e);
-    box.innerHTML='<div class="live-error">De stand kon niet worden opgehaald uit Google Sheets. Controleer bij Delen of iedereen met de link kijktoegang heeft. Technische melding: '+esc(e.message||"Onbekende fout")+'</div>';
   }
+  if(!entries){
+    console.error("Live stand:",lastError);
+    box.innerHTML='<div class="live-error">Het klassement kan momenteel niet worden geladen uit het tabblad Stand. '+esc(lastError?.message||"Onbekende fout")+'</div>';
+    return;
+  }
+  let html='<div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div>';
+  for(const r of entries){
+    const cls=norm(r.team)===norm("United Boys")?' ub-highlight':'';
+    html+=`<div class="row${cls}"><div>${esc(r.rank)}</div><div><b>${esc(r.team)}</b></div><div>${esc(r.played)}</div><div>${esc(r.points)}</div></div>`;
+  }
+  box.innerHTML=html;
 }
 async function loadLiveStats(){
   const box=document.getElementById("live-stats");
