@@ -1411,7 +1411,7 @@ async function loadHomeDashboard(){
   // Alleen noodwaarden als Google Sheets tijdelijk niet bereikbaar is. Live Sheet-data krijgt voorrang.
   const fallbackStats=[['Tuncay',10,3],['Arno',7,2],['Simon',0,5],['Tom',2,1]];
   const render=(matches,stats)=>{
-    const played=matches.filter(m=>/^\d+\s*[-:]\s*\d+$/.test(String(m[4]).trim()));
+    const played=matches.filter(m=>m[4]);
     let wins=0,draws=0,losses=0,forGoals=0,againstGoals=0;
     const homeAway=["UIT","THUIS","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","UIT","UIT","THUIS","THUIS","UIT","THUIS","UIT","THUIS","UIT","THUIS","UIT","UIT","THUIS","THUIS","THUIS"];
     played.forEach(m=>{
@@ -1454,66 +1454,22 @@ async function loadHomeDashboard(){
     const hi=matchRows.findIndex(r=>{const h=r.map(norm);return h.includes('datum')&&h.includes('tegenstander')&&h.includes('score')});
     if(hi<0) throw new Error('wedstrijdkoppen'); const h=matchRows[hi];
     const mi={num:headerIndex(h,['#']),date:headerIndex(h,['Datum']),opp:headerIndex(h,['Tegenstander']),score:headerIndex(h,['Score']),result:headerIndex(h,['Uitslag','Resultaat']),time:headerIndex(h,['Uur']),location:headerIndex(h,['Opmerking'])};
-    const matches=matchRows.slice(hi+1).map((r,i)=>[mi.num>=0&&r[mi.num]?r[mi.num]:String(i+1),r[mi.date]||'',r[mi.opp]||'', mi.result>=0?r[mi.result]:'',ubScore(r[mi.score], mi.result>=0?r[mi.result]:''),r[mi.time]||'',r[mi.location]||'']).filter(r=>r[1]&&r[2]);
-    // Controleer ontbrekende uitslagen via het afzonderlijke wedstrijd-per-wedstrijdblad.
-    // Dit voorkomt dat een wedstrijd uit de seizoenscijfers verdwijnt wanneer
-    // één scorecel in de gepubliceerde wedstrijdresultaten tijdelijk leeg is.
-    try{
-      const detailRows=await loadSheet('Wedstrijd per wedstrijd');
-      const dhi=detailRows.findIndex(r=>r.some(v=>norm(v)==='tegenstander')&&r.some(v=>norm(v)==='score'));
-      if(dhi>=0){
-        const dh=detailRows[dhi];
-        const oi=headerIndex(dh,['Tegenstander']),si=headerIndex(dh,['Score']);
-        if(oi>=0&&si>=0){
-          const scores=new Map();
-          detailRows.slice(dhi+1).forEach(r=>{
-            const opponent=norm(r[oi]);
-            const score=String(r[si]||'').trim();
-            if(opponent && /^\d+\s*[-:]\s*\d+$/.test(score) && !scores.has(opponent)) scores.set(opponent,score);
-          });
-          matches.forEach(m=>{
-            if(!/^\d+\s*[-:]\s*\d+$/.test(String(m[4]).trim()) && parseMatchDate(m[1],m[5]) && parseMatchDate(m[1],m[5]).getTime()<Date.now()){
-              const other=scores.get(norm(m[2]));
-              if(other) m[4]=ubScore(other,m[3]);
-            }
-          });
-        }
+    const matches=matchRows.slice(hi+1).map((r,i)=>[mi.num>=0&&r[mi.num]?r[mi.num]:String(i+1),r[mi.date]||'',r[mi.opp]||'',mi.result>=0?r[mi.result]||'':'',ubScore(r[mi.score], mi.result>=0?r[mi.result]:''),r[mi.time]||'',r[mi.location]||'']).filter(r=>r[1]&&r[2]);
+    // Herstel alleen ontbrekende uitslagen uit het bestaande wedstrijdarchief.
+    // Live scores hebben altijd voorrang; toekomstige wedstrijden worden nooit ingevuld.
+    const key=m=>norm(m[1])+'|'+norm(m[2]);
+    const existing=new Map(matches.map(m=>[key(m),m]));
+    fallbackMatches.forEach(archived=>{
+      const old=existing.get(key(archived));
+      const score=ubScore(archived[4],archived[3]);
+      if(!/^\d+\s*[-:]\s*\d+$/.test(score)) return;
+      if(old){
+        if(!/^\d+\s*[-:]\s*\d+$/.test(String(old[4]).trim())) old[4]=score;
+      }else{
+        const date=parseMatchDate(archived[1],archived[5]);
+        if(date && date.getTime()<=Date.now()) matches.push([...archived]);
       }
-    }catch(e){console.warn('Aanvullende wedstrijdcontrole niet beschikbaar:',e);}
-    // Tweede onafhankelijke bron: het wedstrijd-overzicht onderaan Klassement.
-    // Alleen ontbrekende scores invullen; nooit bestaande uitslagen overschrijven.
-    try{
-      const klass=await loadSheet('Klassement');
-      const kh=klass.findIndex(r=>r.some(v=>norm(v)==='tegenstander')&&r.some(v=>norm(v)==='goals voor')&&r.some(v=>norm(v)==='goals tegen'));
-      if(kh>=0){
-        const hdr=klass[kh];
-        const ko=headerIndex(hdr,['Tegenstander']);
-        const kf=headerIndex(hdr,['Goals voor']);
-        const ka=headerIndex(hdr,['Goals tegen']);
-        if(ko>=0&&kf>=0&&ka>=0){
-          const byOpp=new Map();
-          klass.slice(kh+1).forEach(r=>{
-            const opp=norm(r[ko]);
-            const a=String(r[kf]??'').trim(),b=String(r[ka]??'').trim();
-            if(opp&&/^\d+$/.test(a)&&/^\d+$/.test(b)){
-              if(!byOpp.has(opp))byOpp.set(opp,[]);
-              byOpp.get(opp).push(a+'-'+b);
-            }
-          });
-          const occurrence=new Map();
-          matches.forEach(m=>{
-            const opp=norm(m[2]);
-            const nth=occurrence.get(opp)||0;
-            occurrence.set(opp,nth+1);
-            if(!/^\d+\s*[-:]\s*\d+$/.test(String(m[4]).trim())){
-              const d=parseMatchDate(m[1],m[5]);
-              const score=byOpp.get(opp)?.[nth];
-              if(d&&d.getTime()<Date.now()&&score)m[4]=score;
-            }
-          });
-        }
-      }
-    }catch(e){console.warn('Klassement wedstrijdcontrole niet beschikbaar:',e);}
+    });
     let stats=[]; try{
       const rows=await loadSheet('Wedstrijd per wedstrijd'); const sh=rows.findIndex(r=>r.some(v=>norm(v)==='speler')); if(sh<0) throw 0; const hh=rows[sh];
       const ix={p:headerIndex(hh,['Speler']),g:headerIndex(hh,['Goals']),a:headerIndex(hh,['Assists'])}; const map=new Map();
