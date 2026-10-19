@@ -1182,43 +1182,12 @@ function esc(v){
   return String(v??"").replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
 async function loadSheet(sheet){
-  // Google Visualization JSONP avoids cross-origin fetch restrictions on GitHub Pages.
-  // It reads the same shared spreadsheet, including newly edited cells.
-  try {
-    return await new Promise((resolve,reject)=>{
-      const cb='ubSheetResponse_'+Math.random().toString(36).slice(2);
-      const script=document.createElement('script');
-      let done=false;
-      const finish=(error,rows)=>{
-        if(done)return; done=true;
-        clearTimeout(timer); script.remove();
-        try{delete window[cb];}catch(e){window[cb]=undefined;}
-        if(error)reject(error); else resolve(rows);
-      };
-      const timer=setTimeout(()=>finish(new Error('Google Sheets reageert niet: '+sheet)),12000);
-      window[cb]=response=>{
-        if(!response || response.status==='error' || !response.table){
-          finish(new Error('Google Sheets gaf geen gegevens voor '+sheet));return;
-        }
-        const t=response.table;
-        const columns=(t.cols||[]).map(c=>String(c.label||c.id||''));
-        const rows=[columns,...(t.rows||[]).map(row=>(row.c||[]).map(c=>c==null?'':String(c.f??c.v??'')))];
-        finish(null,rows);
-      };
-      script.onerror=()=>finish(new Error('Google Sheets verbinding mislukt: '+sheet));
-      const tqx='out:json;responseHandler:'+cb;
-      script.src='https://docs.google.com/spreadsheets/d/'+UNITED_BOYS_SHEET_ID+
-        '/gviz/tq?sheet='+encodeURIComponent(sheet)+'&headers=1&tqx='+encodeURIComponent(tqx)+'&ub='+Date.now();
-      document.head.appendChild(script);
-    });
-  }catch(jsonpError){
-    // Secondary route for spreadsheets whose visualization endpoint disallows JSONP.
-    const response=await fetch(csvUrl(sheet),{cache:'no-store'});
-    if(!response.ok)throw jsonpError;
-    const content=await response.text();
-    if(content.trim().startsWith('<'))throw jsonpError;
-    return parseCSV(content);
-  }
+  // Cache-buster zodat nieuwe wedstrijdstatistieken zo snel mogelijk zichtbaar zijn.
+  const base = csvUrl(sheet);
+  const url = base + (base.includes("?") ? "&" : "?") + "ub=" + Date.now();
+  const r=await fetch(url, {cache:"no-store"});
+  if(!r.ok) throw new Error("Google Sheets kon niet worden geladen");
+  return parseCSV(await r.text());
 }
 function headerIndex(headers, names){
   // Google Sheets can publish slightly different header text (e.g. 'Wed.', 'Wedstrijden' or extra spaces).
@@ -1253,7 +1222,7 @@ async function loadLiveStand(){
     const rows=await loadSheet("Stand");
     const headerRowIndex=rows.findIndex(r=>{
       const h=r.map(norm);
-      return h.some(x=>x==='ploeg') && h.some(x=>x==='punten'||x==='punt') && h.some(x=>x==='wed'||x==='wedstrijden'||x==='wedstrijd');
+      return h.includes("ploeg") && (h.includes("punten") || h.includes("punt")) && (h.includes("wed") || h.includes("wedstrijden"));
     });
     if(headerRowIndex<0) throw new Error("Stand-koppen niet gevonden");
     const headers=rows[headerRowIndex];
@@ -1269,7 +1238,7 @@ async function loadLiveStand(){
     render(data);
   }catch(e){
     console.error(e);
-    box.innerHTML='<div class="row head"><div>#</div><div>Ploeg</div><div>W</div><div>P</div></div><div class="live-error" role="status">Klassement tijdelijk niet beschikbaar via Google Sheets. Probeer de pagina opnieuw te laden.</div>';
+    render(fallback);
   }
 }
 async function loadLiveStats(){
@@ -1499,14 +1468,7 @@ async function loadHomeDashboard(){
       stats=[...map.values()].filter(r=>r[0]);
     }catch(e){stats=fallbackStats;}
     render(matches,stats);
-  }catch(e){
-    console.error('Seizoencijfers konden niet uit Google Sheets worden geladen',e);
-    ['ubDashPlayed','ubDashWins','ubDashDraws','ubDashLosses','ubDashGoals'].forEach(id=>{
-      const el=document.getElementById(id);if(el)el.textContent='—';
-    });
-    const scorer=document.getElementById('ubDashTopScorer');if(scorer)scorer.textContent='—';
-    const assists=document.getElementById('ubDashTopAssist');if(assists)assists.textContent='—';
-  }
+  }catch(e){render(fallbackMatches,fallbackStats);}
 }
 function loadLiveGoogleSheets(){
   loadLiveStand();
