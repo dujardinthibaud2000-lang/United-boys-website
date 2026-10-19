@@ -947,6 +947,20 @@ img[alt="Thibaud Dujardin"]{
 .ub-player-hero.ub-darren-exact .ub-player-photo img{inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important;border:0!important;filter:none!important;transform:none!important;}
 .ub-player-hero.ub-darren-exact .ub-player-title,.ub-player-hero.ub-darren-exact .ub-player-big-number,.ub-player-hero.ub-darren-exact .ub-player-number,.ub-player-hero.ub-darren-exact .ub-player-line,.ub-player-hero.ub-darren-exact .ub-player-position{display:none!important;}
 </style>
+
+<style id="ub-roster-photo-fit-20261019">
+/* Only roster-card images: preserve the full portrait without cropping. */
+#spelers .player-photo > img {
+  position:absolute !important; inset:0 !important;
+  left:0 !important; top:0 !important; bottom:0 !important; right:0 !important;
+  transform:none !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important;
+  object-fit:contain !important; object-position:center center !important;
+  display:block !important; z-index:3 !important;
+}
+#spelers .player-photo:has(> img)::before { display:none !important; }
+#spelers .player-photo:has(> img)::after { display:none !important; }
+</style>
 </head>
 <body>
 
