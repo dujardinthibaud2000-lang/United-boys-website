@@ -2448,5 +2448,54 @@ initSponsorTicker();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)updatePhotos();});
 })();
 </script>
+
+<!-- UNITED BOYS: uitsluitend selectiepagina, compacte kaarten; originele foto's ongewijzigd -->
+<style id="ub-selection-compact-final">
+#ploeg .scroller{align-items:flex-start!important;gap:12px!important;scroll-snap-type:x mandatory!important;}
+#ploeg .scroller .player{flex:0 0 78%!important;max-width:340px!important;min-height:0!important;height:auto!important;align-self:flex-start!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important;overflow:hidden!important;position:relative!important;scroll-snap-align:start!important;}
+#ploeg .scroller .player .player-photo{position:relative!important;display:block!important;flex:0 0 275px!important;height:275px!important;min-height:275px!important;max-height:275px!important;width:100%!important;overflow:hidden!important;margin:0!important;padding:0!important;}
+#ploeg .scroller .player .player-info{position:relative!important;inset:auto!important;display:block!important;flex:0 0 auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:11px 14px 13px!important;transform:none!important;}
+#ploeg .scroller .player .player-info h4{font-size:clamp(19px,5.3vw,25px)!important;line-height:1.13!important;margin:4px 0 0!important;}
+#ploeg .scroller .player .player-info .club{font-size:10px!important;letter-spacing:1.5px!important;}
+#ploeg .scroller .player .player-photo::after{display:none!important;}
+#ploeg .scroller .player .ub-selection-number{position:absolute;right:10px;top:10px;z-index:8;background:rgba(1,14,34,.78);border:1px solid rgba(56,153,255,.8);border-radius:11px;padding:5px 10px;color:#fff;font-size:19px;font-weight:900;box-shadow:0 0 13px rgba(8,120,255,.35);pointer-events:none;}
+#ploeg .position{position:relative!important;}
+#ploeg .ub-selection-hint{font-size:11px;color:#80baff;text-align:right;margin:2px 4px 7px;letter-spacing:.3px;}
+@media(min-width:701px){#ploeg .scroller .player{flex-basis:250px!important;}#ploeg .scroller .player .player-photo{height:285px!important;min-height:285px!important;max-height:285px!important;flex-basis:285px!important;}}
+@media(max-width:400px){#ploeg .scroller .player{flex-basis:81%!important;}#ploeg .scroller .player .player-photo{height:260px!important;min-height:260px!important;max-height:260px!important;flex-basis:260px!important;}}
+</style>
+<script id="ub-selection-compact-final-script">
+(function(){
+  function compactSelection(){
+    document.querySelectorAll('#ploeg .scroller .player').forEach(function(card){
+      var photo=card.querySelector('.player-photo'), info=card.querySelector('.player-info');
+      if(!photo||!info)return;
+      /* Inline !important uit oudere versies overschrijven, uitsluitend op de selectiekaarten. */
+      var cardRules={height:'auto',minHeight:'0',display:'flex',flexDirection:'column',alignSelf:'flex-start',justifyContent:'flex-start',overflow:'hidden'};
+      Object.keys(cardRules).forEach(function(k){card.style.setProperty(k.replace(/[A-Z]/g,function(c){return '-'+c.toLowerCase()}),cardRules[k],'important')});
+      var photoRules={height:'275px',minHeight:'275px',maxHeight:'275px',flex:'0 0 275px',display:'block',position:'relative',overflow:'hidden'};
+      if(matchMedia('(max-width:400px)').matches){photoRules.height='260px';photoRules.minHeight='260px';photoRules.maxHeight='260px';photoRules.flex='0 0 260px'}
+      else if(matchMedia('(min-width:701px)').matches){photoRules.height='285px';photoRules.minHeight='285px';photoRules.maxHeight='285px';photoRules.flex='0 0 285px'}
+      Object.keys(photoRules).forEach(function(k){photo.style.setProperty(k.replace(/[A-Z]/g,function(c){return '-'+c.toLowerCase()}),photoRules[k],'important')});
+      var infoRules={position:'relative',inset:'auto',height:'auto',minHeight:'0',flex:'0 0 auto',margin:'0',padding:'11px 14px 13px',transform:'none',display:'block'};
+      Object.keys(infoRules).forEach(function(k){info.style.setProperty(k,infoRules[k],'important')});
+      /* Rugnummer alleen tonen indien dit al in de bestaande spelersdata staat. */
+      var title=info.querySelector('h4');
+      if(title && !photo.querySelector('.ub-selection-number')){
+        var number=title.getAttribute('data-number');
+        if(!number && typeof data!=='undefined'){
+          var name=title.textContent.trim();
+          var key=Object.keys(data).find(function(k){return k===name||data[k].full===name});
+          if(key)number=data[key].number;
+        }
+        if(number){var badge=document.createElement('span');badge.className='ub-selection-number';badge.textContent='#'+number;photo.appendChild(badge)}
+      }
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',compactSelection);
+  else compactSelection();
+  window.addEventListener('resize',compactSelection);
+})();
+</script>
 </body>
 </html>
