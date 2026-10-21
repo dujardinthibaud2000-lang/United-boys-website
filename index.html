@@ -515,6 +515,14 @@ body{background:#020b16;color:#fff}
 /* Alleen de VS-vorm: neon-omlijning met bliksemschicht, zoals het goedgekeurde voorbeeld. */
 #homeCountdown .ub-matchday-vs{font-size:0!important;letter-spacing:0!important;transform:none!important;filter:none!important;text-shadow:none!important;-webkit-text-stroke:0!important;animation:none!important;overflow:visible}
 #homeCountdown .ub-neon-vs-art{display:block;width:100%;height:auto;max-height:96px;overflow:visible;filter:drop-shadow(0 0 7px rgba(0,155,255,.9))}
+
+/* Homepage: verberg alleen het dubbele blok 'Komende wedstrijd'.
+   Behoud de DOM-elementen voor bestaande automatische updates,
+   en behoud de uitrusting die in dezelfde container staat. */
+#home #ubDashNext > .ub-home-match-top,
+#home #ubDashNext > .ub-home-next-body{display:none!important}
+#home #ubDashNext{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;border-radius:0!important}
+#home #ubDashNext > .ub-kit-section{margin-top:18px}
 </style>
 
 <style id="footer-compact-mobile">
