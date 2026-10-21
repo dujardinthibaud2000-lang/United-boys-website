@@ -2479,16 +2479,19 @@ initSponsorTicker();
       Object.keys(photoRules).forEach(function(k){photo.style.setProperty(k.replace(/[A-Z]/g,function(c){return '-'+c.toLowerCase()}),photoRules[k],'important')});
       var infoRules={position:'relative',inset:'auto',height:'auto',minHeight:'0',flex:'0 0 auto',margin:'0',padding:'11px 14px 13px',transform:'none',display:'block'};
       Object.keys(infoRules).forEach(function(k){info.style.setProperty(k,infoRules[k],'important')});
-      /* Rugnummer alleen tonen indien dit al in de bestaande spelersdata staat. */
+      /* Rugnummers uit de bestaande, gecontroleerde spelersprofielen.
+         Alleen een badge toevoegen; de foto zelf wordt niet aangepast. */
+      var numbers={"Simon Fauconier":"10","Carlos Fernandez":"11","Xander Neyt":"4","Arno Laby":"3","Darren Vervaet":"9","Mats Creyf":"13","Tibe Adriaen":"8","Thibaud Dujardin":"7","Tuncay Van Wesemael":"16","Louis Calle":"5","Tom Vandriessche":"14"};
       var title=info.querySelector('h4');
       if(title && !photo.querySelector('.ub-selection-number')){
-        var number=title.getAttribute('data-number');
-        if(!number && typeof data!=='undefined'){
-          var name=title.textContent.trim();
-          var key=Object.keys(data).find(function(k){return k===name||data[k].full===name});
-          if(key)number=data[key].number;
+        var name=title.textContent.trim().replace(/\s+/g,' ');
+        var number=numbers[name];
+        if(number){
+          var badge=document.createElement('span');
+          badge.className='ub-selection-number';
+          badge.textContent='#'+number;
+          photo.appendChild(badge);
         }
-        if(number){var badge=document.createElement('span');badge.className='ub-selection-number';badge.textContent='#'+number;photo.appendChild(badge)}
       }
     });
   }
