@@ -1161,7 +1161,7 @@ margin:0!important;padding:0!important;display:block!important;
 
 <section id="fotos" class="page"><div class="wrap">
  <div class="section-title"><h2>Foto's</h2><span>United Boys</span></div>
- <div class="info-card" style="text-align:center;padding:55px 20px"><strong>📸</strong><p>Hier komen later de ploegfoto en wedstrijdfoto's.</p></div>
+ <div id="ub-photo-gallery" class="ub-photo-gallery"><div class="info-card live-loading">Foto's laden…</div></div>
 </div></section>
 
 <section id="nieuws" class="page"><div class="wrap">
@@ -2198,6 +2198,48 @@ initSponsorTicker();
       '</div>';
     card.querySelector('.player-info').appendChild(extra);
   });
+})();
+</script>
+
+<style>
+/* Alleen fotopagina: live galerij */
+.ub-photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:16px}
+.ub-photo-gallery>.info-card{grid-column:1/-1}
+.ub-photo-tile{background:#071a30;border:1px solid rgba(74,143,220,.28);border-radius:18px;overflow:hidden;color:#fff}
+.ub-photo-tile img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#061326}
+.ub-photo-details{padding:13px 15px}.ub-photo-details strong{display:block;font-size:16px;overflow-wrap:anywhere}
+.ub-photo-details small{display:block;color:#9cb6d3;margin-top:5px}
+</style>
+<script>
+/* Alleen fotopagina: lees tabblad Fotos uit dezelfde Google Spreadsheet. */
+(async function(){
+ const gallery=document.getElementById('ub-photo-gallery');
+ if(!gallery)return;
+ const escapePhotoText=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function photoUrl(raw){
+  let u;try{u=new URL(String(raw||'').trim());}catch{return null;}
+  if(u.protocol!=='https:' && u.protocol!=='http:')return null;
+  if(u.hostname==='drive.google.com'){
+    const id=u.pathname.match(/^\/file\/d\/([a-zA-Z0-9_-]+)/)?.[1]||u.searchParams.get('id');
+    if(id)return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w1600';
+  }
+  return u.href;
+ }
+ async function updatePhotos(){
+  try{
+   const rows=await loadSheet('Fotos');
+   if(!rows.length)throw Error('Geen rijen');
+   const h=rows[0].map(v=>String(v).trim().toLowerCase().replace(/[^a-z0-9]/g,''));
+   const idx=(...names)=>h.findIndex(v=>names.includes(v));
+   const title=idx('titel','naam','omschrijving'),url=idx('fotolink','fotourl','url','link','foto'),date=idx('datum','date');
+   if(url<0)throw Error('Kolom Fotolink ontbreekt');
+   const photos=rows.slice(1).map(r=>({title:r[title]||'United Boys',url:photoUrl(r[url]),date:date>=0?r[date]:''})).filter(p=>p.url);
+   if(!photos.length){gallery.innerHTML='<div class="info-card" style="text-align:center;padding:45px 20px"><strong>📸</strong><p>Hier verschijnen binnenkort onze ploeg- en wedstrijdfoto’s.</p></div>';return;}
+   gallery.innerHTML=photos.reverse().map(p=>'<article class="ub-photo-tile"><img loading="lazy" src="'+escapePhotoText(p.url)+'" alt="'+escapePhotoText(p.title)+'"><div class="ub-photo-details"><strong>'+escapePhotoText(p.title)+'</strong>'+(p.date?'<small>'+escapePhotoText(p.date)+'</small>':'')+'</div></article>').join('');
+  }catch(e){gallery.innerHTML='<div class="info-card" style="text-align:center;padding:45px 20px"><strong>📸</strong><p>Hier verschijnen binnenkort onze ploeg- en wedstrijdfoto’s.</p></div>';}
+ }
+ updatePhotos();
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)updatePhotos();});
 })();
 </script>
 </body>
